@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -48,10 +49,13 @@ public class Topic {
                     case 4: // Docs
                         line=line.replace(" ","");
                         String[] p=line.split("\n");
-                        this.docs=Arrays.copyOfRange(p,1,p.length);
+                        ArrayList<String> pids=new ArrayList<>();
+                        for(int i=1;i<p.length;i++)
+                            if(p[i].trim().length()>0) // No Empty document number
+                                pids.add(p[i]);
+                        this.docs=pids.stream().toArray(String[]::new);
                         break;
                 }
-
                 index++;
             }
         } catch (FileNotFoundException e) {
