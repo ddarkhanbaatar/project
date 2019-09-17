@@ -1,0 +1,15 @@
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/Project1.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/ranking/CombMNZ.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/ranking/Borda.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/core/Normaliser.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/ranking/Fusion.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/core/TextProcessor.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/TrecResult.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/TrecResults.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/reduction/KLIReduction.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/Reranker.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/reduction/IDFReduction.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/core/TopicParser.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/ranking/CombSUM.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/core/Topic.java
+/mnt/c/apps/assess/project/src/main/java/infs7410/project1/core/MinMax.java
