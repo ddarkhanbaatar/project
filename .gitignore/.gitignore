@@ -1,1 +1,3 @@
-# Test
+# Ignore data files
+input/
+var/
