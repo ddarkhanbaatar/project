@@ -40,7 +40,7 @@ public class IDFReduction {
 
 
         for (int i = 0; i < K && i < scoredTerms.size(); i++) {
-            result[i] = scoredTerms.get(i).term;
+            result[i] = scoredTerms.get(i).getTerm();
         }
         return result;
     }
@@ -71,23 +71,10 @@ public class IDFReduction {
 
 
         for (int i = 0; i < K && i < scoredTerms.size(); i++) {
-            result[i] = scoredTerms.get(i).term;
+            result[i] = scoredTerms.get(i).getTerm();
         }
         return result;
     }
 
-    static class Pair implements Comparable<Pair> {
-        String term;
-        double score;
 
-        public Pair(String term, double score) {
-            this.term = term;
-            this.score = score;
-        }
-
-        @Override
-        public int compareTo(Pair o) {
-            return Double.compare(score, o.score);
-        }
-    }
 }

@@ -1,9 +1,6 @@
 package infs7410.project1;
 
-import infs7410.project1.core.MinMax;
-import infs7410.project1.core.Normaliser;
-import infs7410.project1.core.Topic;
-import infs7410.project1.core.TopicParser;
+import infs7410.project1.core.*;
 import infs7410.project1.ranking.Borda;
 import infs7410.project1.ranking.CombMNZ;
 import infs7410.project1.ranking.CombSUM;
@@ -85,15 +82,16 @@ public class Project1 {
             System.out.println("\t5. CombMNZ");
             System.out.println("\t6. IDF reduction");
             System.out.println("\t7. KLI reduction");
+            System.out.println("\t8. Parsing Boolean query");
             System.out.println("Value:");
 
             method = in.nextInt();
-            if (method > 7 || method < 1) {
+            if (method > 8 || method < 1) {
                 System.out.println("The method is invalid !!!");
                 return;
             }
 
-            if (method < 6) {
+            if (method < 6 ) {
                 System.out.println("------------------------------------------------------------------------");
                 System.out.println("Please input the string which contains 3 chars:");
                 System.out.println("\tChar[1] : T - Title based query, B - Boolean based query");
@@ -159,13 +157,16 @@ public class Project1 {
         // Tuned value for BM25
         double parameterB = 0.75;
         if (dataYear.equals("7") && queryType.equals("T")) // 2017 Title query
-            parameterB = 0.00; // No normalization
+            parameterB = 0.00; // After tuning, no normalization
         else if (dataYear.equals("7") && queryType.equals("B")) // 2017 Boolean query
             parameterB = 0.00; //
         else if (dataYear.equals("8") && queryType.equals("T")) // 2018 Title query
-            parameterB = 0.00; //
+            parameterB = 0.00; // After tuning, no normalization
         else // 2018 Boolean query
             parameterB = 0.75;
+
+        // For using to write or read
+        String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType)+"boolean_terms.res";
 
         switch (method) {
             case 2: //BM25
@@ -184,7 +185,7 @@ public class Project1 {
 
                 // Build path and read topics
                 topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType);
+                topics = TopicParser.parse(topicPath, queryType,queryPath);
 
 
                 if (dataType.equals("3")) // Tunning for only first topic and for only BM25
@@ -306,7 +307,7 @@ public class Project1 {
 
                 // Build path and read topics (only for testing data)
                 topicPath = path.get("tar") + path.get(dataYear) + path.get("1") + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType);
+                topics = TopicParser.parse(topicPath, queryType,queryPath);
 
 
                 int[] rValues = new int[]{30, 50, 80};
@@ -335,6 +336,17 @@ public class Project1 {
                 }
 
 
+            }
+            break;
+            case 8: // Parse Boolean Queries
+            {
+                // Build path and read topics
+                topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
+                topics = TopicParser.parse(topicPath, queryType,queryPath);
+                System.out.println("------------------------------------------------------------------------");
+                System.out.println("Start parsing Boolean query ");
+                BooleanQueryParser parser = new BooleanQueryParser();
+                parser.parseBooleanQuery(topics, index.getIndexRef(), queryPath);
             }
             break;
 

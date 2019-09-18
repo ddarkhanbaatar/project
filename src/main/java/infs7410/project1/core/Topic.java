@@ -18,14 +18,12 @@ public class Topic {
     private String booleanQueries;
     private String[] docs;
     private String fileName;
-    private String queryType;
 
     public Topic() {
 
     }
 
-    public Topic(File topicFile, String queryType) {
-        this.queryType = queryType;
+    public Topic(File topicFile) {
         parseFile(topicFile);
     }
 
@@ -62,20 +60,20 @@ public class Topic {
                 }
                 index++;
             }
-            if (this.queryType.equals("B")) {
-                // this.parseBooleanQuery();
-            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private  String[] keywords=new String[]{
-      "or ","and ","not ", "$",
-    };
+    //Combine two queries
+    public void mergeQuery(String[] booleanQueries)
+    {
+        String[] combinedQuery=new String[this.queries.length+booleanQueries.length];
+        System.arraycopy(this.queries,0,combinedQuery,0, this.queries.length);
+        System.arraycopy(booleanQueries,0,combinedQuery,this.queries.length, booleanQueries.length);
 
-
-
+        this.queries=combinedQuery;
+    }
     public String getTopicId() {
         return topicId;
     }
