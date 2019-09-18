@@ -3,5 +3,5 @@ var/
 .idea/vcs.xml
 .idea/workspace.xml
 # 
-target/*.jar
+target/
 *.class
