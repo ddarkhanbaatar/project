@@ -12,7 +12,7 @@ public class BooleanQueryParser {
             s = new Scanner(new URL(baseUrl+"diagnos*").openStream());
             System.out.println(s.findWithinHorizon("<QueryTranslation>\\s*(.*)\\s*<\\/QueryTranslation>", 0));
 
-            this.queries = TextProcessor.doStemAndStopwords(words);
+            //this.queries = TextProcessor.doStemAndStopwords(words);
         } catch (IOException e) {
             e.printStackTrace();
         }
