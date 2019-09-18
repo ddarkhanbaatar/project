@@ -31,6 +31,7 @@ public class TopicParser {
             Topic topic = new Topic(file);
             d += topic.getDocs().length;
             q += topic.getQueries().length;
+            System.out.println("Topic:[" + topic.getTopicId() + "]");
             if (queryType.equals("B"))
                 topic.mergeQuery(booleanQueries.get(topic.getTopicId()).split(" "));
             result.add(topic);

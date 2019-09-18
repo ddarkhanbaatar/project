@@ -36,7 +36,7 @@ public class Topic {
                 String line = scanner.next();
                 switch (index) {
                     case 1: // Topic
-                        this.topicId = line.split("\n")[0];
+                        this.topicId = line.split("\n")[0].trim();
                         break;
                     case 2: // Title
                         this.title = line.split("\n")[0];
@@ -54,7 +54,7 @@ public class Topic {
                         ArrayList<String> pids = new ArrayList<>();
                         for (int i = 1; i < p.length; i++)
                             if (p[i].trim().length() > 0) // No Empty document number
-                                pids.add(p[i]);
+                                pids.add(p[i].trim());
                         this.docs = pids.stream().toArray(String[]::new);
                         break;
                 }
