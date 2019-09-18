@@ -25,8 +25,8 @@ public class Topic {
     }
 
     public Topic(File topicFile, String queryType) {
-        parseFile(topicFile);
         this.queryType = queryType;
+        parseFile(topicFile);
     }
 
     private void parseFile(File topicFile) {
