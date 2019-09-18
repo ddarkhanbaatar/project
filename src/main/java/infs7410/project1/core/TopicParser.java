@@ -13,15 +13,15 @@ public class TopicParser {
         File folder = new File(path);
         long start = System.currentTimeMillis();
         int q = 0, d = 0;
-        HashMap<String,String> booleanQueries=new HashMap<>();
+        HashMap<String, String> booleanQueries = new HashMap<>();
 
         // Combine boolean queries
-        if(queryType.equals("B")){
+        if (queryType.equals("B")) {
             try (Scanner scanner = new Scanner(Paths.get(queryPath))) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    String[] values=line.split("|");
-                    booleanQueries.put(values[0],values[1]);
+                    String[] values = line.split("|");
+                    booleanQueries.put(values[0], values[1]);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -31,8 +31,8 @@ public class TopicParser {
             Topic topic = new Topic(file);
             d += topic.getDocs().length;
             q += topic.getQueries().length;
-            if(queryType.equals("B"))
-                topic.setBooleanQueries(booleanQueries.get(topic.getTopicId()));
+            if (queryType.equals("B"))
+                topic.mergeQuery(booleanQueries.get(topic.getTopicId()).split(" "));
             result.add(topic);
         }
         long second = (System.currentTimeMillis() - start) / 1000;

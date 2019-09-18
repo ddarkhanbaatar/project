@@ -72,6 +72,7 @@ public class Topic {
         System.arraycopy(this.queries,0,combinedQuery,0, this.queries.length);
         System.arraycopy(booleanQueries,0,combinedQuery,this.queries.length, booleanQueries.length);
 
+        System.out.println(String.format("[%s] Q(t)=%d, Q(b)=%d Total=%d", this.getTopicId(), this.queries.length, booleanQueries.length, combinedQuery.length));
         this.queries=combinedQuery;
     }
     public String getTopicId() {
