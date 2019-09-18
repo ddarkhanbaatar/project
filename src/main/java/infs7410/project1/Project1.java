@@ -44,7 +44,7 @@ public class Project1 {
         path.put("output", "./output/");
         path.put("1", "testing/");   // testing folder
         path.put("2", "training/");  // training folder
-        path.put("3", "tunning/");   // tunning folder
+        path.put("3", "tunning/");   // tuning folder
         path.put("7", "2017/");      // 2017 folder
         path.put("8", "2018/");      // 2018 folder
         path.put("B", "boolean/");   // Boolean query folder
@@ -97,7 +97,7 @@ public class Project1 {
                 System.out.println("------------------------------------------------------------------------");
                 System.out.println("Please input the string which contains 3 chars:");
                 System.out.println("\tChar[1] : T - Title based query, B - Boolean based query");
-                System.out.println("\tChar[2] : 1 - Testing, 2 - Training, 3 - Tunning");
+                System.out.println("\tChar[2] : 1 - Testing, 2 - Training, 3 - Tuning");
                 System.out.println("\tChar[3] : 7 - 2017 data, 8 - 2018 data");
                 System.out.println("\tFor example: T17 - Analysing Title based query on 2017 testing data");
                 System.out.println("Parameter:");
@@ -156,11 +156,15 @@ public class Project1 {
         }
 
 
-        // Tunned value
+        // Tuned value for BM25
         double parameterB = 0.75;
-        if (dataYear.equals("7"))
-            parameterB = 0.75;
-        else
+        if (dataYear.equals("7") && queryType.equals("T")) // 2017 Title query
+            parameterB = 0.00; // No normalization
+        else if (dataYear.equals("7") && queryType.equals("B")) // 2017 Boolean query
+            parameterB = 0.00; //
+        else if (dataYear.equals("8") && queryType.equals("T")) // 2018 Title query
+            parameterB = 0.00; //
+        else // 2018 Boolean query
             parameterB = 0.75;
 
         switch (method) {
@@ -180,7 +184,7 @@ public class Project1 {
 
                 // Build path and read topics
                 topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath);
+                topics = TopicParser.parse(topicPath, queryType);
 
 
                 if (dataType.equals("3")) // Tunning for only first topic and for only BM25
@@ -189,7 +193,7 @@ public class Project1 {
                     // b=0 No normalization
 
                     System.out.println("------------------------------------------------------------------------");
-                    System.out.println("Start tunning:");
+                    System.out.println("Start tuning:");
                     double[] b = new double[]{
                             0.00, 0.25, 0.50, 0.75, 1.00
                     };
@@ -220,6 +224,7 @@ public class Project1 {
                     }
                     finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + model.getInfo() + ".res");
                 }
+                break;
             }
             case 3: // Borda
             case 4: // CombSUM
@@ -301,7 +306,7 @@ public class Project1 {
 
                 // Build path and read topics (only for testing data)
                 topicPath = path.get("tar") + path.get(dataYear) + path.get("1") + path.get("topics");
-                topics = TopicParser.parse(topicPath);
+                topics = TopicParser.parse(topicPath, queryType);
 
 
                 int[] rValues = new int[]{30, 50, 80};

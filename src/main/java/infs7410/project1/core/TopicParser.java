@@ -4,13 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class TopicParser {
-    public static ArrayList<Topic> parse(String path) {
+    public static ArrayList<Topic> parse(String path, String queryType) {
         ArrayList<Topic> result = new ArrayList<>();
         File folder = new File(path);
         long start = System.currentTimeMillis();
         int q = 0, d = 0;
         for (File file : folder.listFiles()) {
-            Topic topic = new Topic(file);
+            Topic topic = new Topic(file,queryType);
             d += topic.getDocs().length;
             q += topic.getQueries().length;
             result.add(topic);
