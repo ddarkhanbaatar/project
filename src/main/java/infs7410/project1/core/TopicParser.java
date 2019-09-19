@@ -20,7 +20,7 @@ public class TopicParser {
             try (Scanner scanner = new Scanner(Paths.get(queryPath))) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    String[] values = line.split("|");
+                    String[] values = line.split("=");
                     booleanQueries.put(values[0], values[1]);
                 }
             } catch (IOException e) {
@@ -31,7 +31,6 @@ public class TopicParser {
             Topic topic = new Topic(file);
             d += topic.getDocs().length;
             q += topic.getQueries().length;
-            System.out.println("Topic:[" + topic.getTopicId() + "]");
             if (queryType.equals("B"))
                 topic.mergeQuery(booleanQueries.get(topic.getTopicId()).split(" "));
             result.add(topic);

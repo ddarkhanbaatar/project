@@ -44,7 +44,7 @@ public class BooleanQueryParser {
                 // 5. Store query for future merging
 
                 long second = (System.currentTimeMillis() - start) / 1000;
-                bw.write(String.format("%s|%s\n", topics.get(i).getTopicId(), String.join(" ", finalQuery)));
+                bw.write(String.format("%s=%s\n", topics.get(i).getTopicId(), String.join(" ", finalQuery)));
                 System.out.println(String.format("[%d/%d] %s TermsNo:%d (%d:%d) ", i + 1, topics.size(), topics.get(i).getTopicId(), finalQuery.length, second / 60, second % 60));
             }
 
@@ -61,12 +61,12 @@ public class BooleanQueryParser {
         };
         ArrayList<String> keywords = new ArrayList<String>(Arrays.asList(
                 "exp",
-                "adj1", "adj2", "adj3", "adj4", "adj5", "adj6", "adj7", "adj8",
-                "mp", "tw", "sh", "ti", "mp", "ot", "tw", "ab",
+                "adj1", "adj2", "adj3", "adj4", "adj5", "adj6", "adj7", "adj8", "adj",
+                "mp", "tw", "sh", "ti", "mp", "ot", "tw", "ab","yr","au",
                 "a", "b", "c", "t", "i",
                 "or", "and", "not",
                 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-                "blood"
+                "blood","limit","tiab","mesh"
         ));
 
         for (String s : symbols) {
