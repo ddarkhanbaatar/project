@@ -159,11 +159,11 @@ public class Project1 {
         if (dataYear.equals("7") && queryType.equals("T")) // 2017 Title query
             parameterB = 0.00; // After tuning, no normalization
         else if (dataYear.equals("7") && queryType.equals("B")) // 2017 Boolean query
-            parameterB = 0.00; //
+            parameterB = 0.00; // After tuning
         else if (dataYear.equals("8") && queryType.equals("T")) // 2018 Title query
             parameterB = 0.00; // After tuning, no normalization
         else // 2018 Boolean query
-            parameterB = 0.75;
+            parameterB = 0.00; // After tuning
 
         // For using to write or read
         String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType)+"boolean_terms.res";
