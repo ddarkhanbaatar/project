@@ -166,7 +166,7 @@ public class Project1 {
             parameterB = 0.00; // After tuning
 
         // For using to write or read
-        String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType)+"boolean_terms.res";
+        String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType)+"boolean_terms.txt";
 
         switch (method) {
             case 2: //BM25
@@ -241,7 +241,7 @@ public class Project1 {
 
 
                 String externalFiles = path.get("runs") + path.get(dataYear);
-                String internalFiles = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + path.get("topics");
+                String internalFiles = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1");
                 List<TrecResults> docs = new ArrayList<>();
                 Normaliser norm = new MinMax();
 
@@ -256,6 +256,7 @@ public class Project1 {
                 File[] externalList = (new File(externalFiles)).listFiles(filter);
                 if (externalList != null)
                     for (File file : externalList) {
+                        System.out.println("File: "+file.getPath());
                         docs.add(new TrecResults(file.getPath()));
                     }
 
@@ -263,6 +264,7 @@ public class Project1 {
                 if (internalList != null)
                     // Result files are reading
                     for (File file : internalList) {
+                        System.out.println("File: "+file.getPath());
                         docs.add(new TrecResults(file.getPath()));
                     }
 
@@ -276,7 +278,7 @@ public class Project1 {
                 }
 
                 TrecResults finalResults = new TrecResults();
-                finalResults.setRunName(fusion.getInfo());
+                finalResults.setRunName(fusion.toString());
 
                 Set<String> topicList = docs.get(0).getTopics();
                 for (String topic : topicList) {
@@ -289,7 +291,7 @@ public class Project1 {
                     // Fuse the results together and write the new results list to disk.
                     finalResults.getTrecResults().addAll(fusion.Fuse(topicResults).getTrecResults());
                 }
-                finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + "run-" + fusion.getInfo() + ".res");
+                finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + "run-" + fusion.toString() + ".res");
             }
             break;
             case 6: // IDF reduction

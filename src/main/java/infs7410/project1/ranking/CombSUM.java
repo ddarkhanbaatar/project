@@ -17,7 +17,6 @@ public class CombSUM extends Fusion {
                     seen.put(result.getDocID(), result);
                 } else {
                     double score = seen.get(result.getDocID()).getScore();
-                    // TODO: IMPLEMENT ME.
                     result.setScore(result.getScore() + score);
                     seen.put(result.getDocID(), result);
                 }
@@ -25,8 +24,9 @@ public class CombSUM extends Fusion {
         }
         return flatten(seen);
     }
+
     @Override
-    public String getInfo() {
+    public String toString() {
         return "CombSUM";
     }
 }

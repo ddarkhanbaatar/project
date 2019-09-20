@@ -45,9 +45,9 @@ public class CombMNZ extends Fusion {
 
         return flatten(seen);
     }
+
     @Override
-    public String getInfo() {
+    public String toString() {
         return "CombMNZ";
     }
-
 }

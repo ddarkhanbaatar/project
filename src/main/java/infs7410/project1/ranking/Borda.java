@@ -37,9 +37,9 @@ public class Borda extends Fusion {
     }
 
 
+
     @Override
-    public String getInfo() {
+    public String toString() {
         return "Borda";
     }
-
 }

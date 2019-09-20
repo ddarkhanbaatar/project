@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class Fusion  {
     public abstract TrecResults Fuse(List<TrecResults> resultsLists);
-    public abstract String getInfo();
+
     protected TrecResults flatten(HashMap<String, TrecResult> seen) {
         List<TrecResult> unique = new ArrayList<>(seen.size());
         unique.addAll(seen.values());
