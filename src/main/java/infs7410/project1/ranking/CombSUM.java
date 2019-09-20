@@ -18,6 +18,7 @@ public class CombSUM extends Fusion {
                 } else {
                     double score = seen.get(result.getDocID()).getScore();
                     result.setScore(result.getScore() + score);
+                    result.setRunName("CombSUM");
                     seen.put(result.getDocID(), result);
                 }
             }

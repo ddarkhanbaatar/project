@@ -39,6 +39,7 @@ public class Project1 {
         path.put("runs", "./input/runs/");
         path.put("tar", "./input/tar/");
         path.put("output", "./output/");
+        path.put("fusion", "fusion/");
         path.put("1", "testing/");   // testing folder
         path.put("2", "training/");  // training folder
         path.put("3", "tunning/");   // tuning folder
@@ -91,7 +92,7 @@ public class Project1 {
                 return;
             }
 
-            if (method < 6 ) {
+            if (method < 6) {
                 System.out.println("------------------------------------------------------------------------");
                 System.out.println("Please input the string which contains 3 chars:");
                 System.out.println("\tChar[1] : T - Title based query, B - Boolean based query");
@@ -166,7 +167,7 @@ public class Project1 {
             parameterB = 0.00; // After tuning
 
         // For using to write or read
-        String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType)+"boolean_terms.txt";
+        String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType) + "boolean_terms.txt";
 
         switch (method) {
             case 2: //BM25
@@ -185,7 +186,7 @@ public class Project1 {
 
                 // Build path and read topics
                 topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType,queryPath);
+                topics = TopicParser.parse(topicPath, queryType, queryPath);
 
 
                 if (dataType.equals("3")) // Tunning for only first topic and for only BM25
@@ -249,22 +250,24 @@ public class Project1 {
                 FileFilter filter = new FileFilter() {
                     @Override
                     public boolean accept(File pathname) {
-                        return pathname.isFile();
+                        return (pathname.isFile() && pathname.getName().toLowerCase().endsWith(".res"));
                     }
                 };
                 // Run files are reading
                 File[] externalList = (new File(externalFiles)).listFiles(filter);
+                int f = 1;
                 if (externalList != null)
                     for (File file : externalList) {
-                        System.out.println("File: "+file.getPath());
+                        System.out.println(f++ + ". File: " + file.getPath());
                         docs.add(new TrecResults(file.getPath()));
                     }
 
                 File[] internalList = (new File(internalFiles)).listFiles(filter);
+                f = 1;
                 if (internalList != null)
                     // Result files are reading
                     for (File file : internalList) {
-                        System.out.println("File: "+file.getPath());
+                        System.out.println(f++ + ". File: " + file.getPath());
                         docs.add(new TrecResults(file.getPath()));
                     }
 
@@ -291,7 +294,7 @@ public class Project1 {
                     // Fuse the results together and write the new results list to disk.
                     finalResults.getTrecResults().addAll(fusion.Fuse(topicResults).getTrecResults());
                 }
-                finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + "run-" + fusion.toString() + ".res");
+                finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + path.get("fusion") + "run-" + fusion.toString() + ".res");
             }
             break;
             case 6: // IDF reduction
@@ -309,7 +312,7 @@ public class Project1 {
 
                 // Build path and read topics (only for testing data)
                 topicPath = path.get("tar") + path.get(dataYear) + path.get("1") + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType,queryPath);
+                topics = TopicParser.parse(topicPath, queryType, queryPath);
 
 
                 int[] rValues = new int[]{30, 50, 80};
@@ -344,7 +347,7 @@ public class Project1 {
             {
                 // Build path and read topics
                 topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType,queryPath);
+                topics = TopicParser.parse(topicPath, queryType, queryPath);
                 System.out.println("------------------------------------------------------------------------");
                 System.out.println("Start parsing Boolean query ");
                 BooleanQueryParser parser = new BooleanQueryParser();

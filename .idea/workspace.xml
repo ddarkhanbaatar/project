@@ -2,15 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5fe124c4-2a13-40cf-9910-71748a6bfda2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/output/2017/boolean/testing/run-BM25b0.0.res" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2018/boolean/testing/run-BM25b0.0.res" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-Borda.res" beforeDir="false" afterPath="$PROJECT_DIR$/output/2017/title/testing/run-Borda.res" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-BM25b0.75.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-Borda.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-CombMNZ.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-CombSUM.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-IDF-reduction-30.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-IDF-reduction-50.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2017/title/testing/run-IDF-reduction-80.res" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2018/title/testing/run-CombMNZ.res" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/Project1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/Project1.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/Borda.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/Borda.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/CombMNZ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/CombMNZ.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/CombSUM.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/CombSUM.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/Fusion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/ranking/Fusion.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

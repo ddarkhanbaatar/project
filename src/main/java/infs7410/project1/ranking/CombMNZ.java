@@ -15,13 +15,12 @@ public class CombMNZ extends Fusion {
 
         for (TrecResults doc : topicResults) {
             for (TrecResult result : doc.getTrecResults()) {
-                System.out.println("Topic:" + result.getTopic() + ", DocID:" + result.getDocID() + ", score:" + result.getScore());
+                // System.out.println("Topic:" + result.getTopic() + ", DocID:" + result.getDocID() + ", score:" + result.getScore());
                 if (!seen.containsKey(result.getDocID())) {
                     seen.put(result.getDocID(), result);
                 } else {
                     // Sum the scores
                     double score = seen.get(result.getDocID()).getScore();
-                    // TODO: IMPLEMENT ME.
                     result.setScore(result.getScore() + score);
 
                     seen.put(result.getDocID(), result);
@@ -33,14 +32,15 @@ public class CombMNZ extends Fusion {
                         occur.put(result.getDocID(), occur.get(result.getDocID()) + 1);
                 }
 
-                System.out.println("Seen["  + result.getDocID() + "] = " +seen.get(result.getDocID()).getScore());
+               // System.out.println("Seen["  + result.getDocID() + "] = " +seen.get(result.getDocID()).getScore());
             }
         }
         // Multiple by score
         for (String key : seen.keySet()){
             double score=seen.get(key).getScore()*occur.get(key);
-            System.out.println("Key:"+key+", Sum:"+seen.get(key).getScore()+", occur:"+occur.get(key));
+            // System.out.println("Key:"+key+", Sum:"+seen.get(key).getScore()+", occur:"+occur.get(key));
             seen.get(key).setScore(score);
+            seen.get(key).setRunName("CombMNZ");
         }
 
         return flatten(seen);

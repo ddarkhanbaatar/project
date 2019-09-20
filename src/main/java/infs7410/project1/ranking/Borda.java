@@ -23,9 +23,9 @@ public class Borda extends Fusion {
 
                 // If the seen map contains the docID, add the current score to the score computed above.
                 if (seen.containsKey(result.getDocID())) {
-                    seen.put(result.getDocID(), new TrecResult(result.getTopic(), result.getDocID(), 0, seen.get(result.getDocID()).getScore() + score, null));
+                    seen.put(result.getDocID(), new TrecResult(result.getTopic(), result.getDocID(), 0, seen.get(result.getDocID()).getScore() + score, this.toString()));
                 } else { // Otherwise, set the score to the one computed above.
-                    seen.put(result.getDocID(), new TrecResult(result.getTopic(), result.getDocID(), 0, score, null));
+                    seen.put(result.getDocID(), new TrecResult(result.getTopic(), result.getDocID(), 0, score, this.toString()));
                 }
             }
         }
