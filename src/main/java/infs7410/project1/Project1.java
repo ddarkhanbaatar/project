@@ -322,12 +322,8 @@ public class Project1 {
                 if (dataType.equals("2")) //Tuning
                     rValues = new int[]{30, 50, 80};
                 else { // Put optimal r value
-                    if (dataYear.equals("7")) //
-                        rValues = new int[]{30};
-                    else //2018
-                        rValues = new int[]{30};
-
-
+                    // both KLI and IDFr are same high value on 2017 and 2018 dataset. It is r=80% stay
+                    rValues = new int[]{80};
                 }
 
                 for (int r : rValues) {

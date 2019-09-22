@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Evaluating result files"
+echo "----------------------------------------------"
+qrels="/mnt/c/apps/assess/project/input/tar/2017/training/qrels/2017-training.qrels"
+res_file="/mnt/c/apps/assess/project/output/2017/title/training/reduction/"
+eval_file="/mnt/c/apps/assess/project/output/2017/title/training/reduction/eval/"
+
+for f in *.res; do
+  cd /mnt/c/apps/Tools/trec_eval/
+  ./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels "$res_file${f}" > "${eval_file}${f}.eval"
+  echo "$f is completed"
+done
