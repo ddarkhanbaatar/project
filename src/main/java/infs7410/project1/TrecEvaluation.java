@@ -8,10 +8,7 @@ public class TrecEvaluation {
     private HashMap<String, HashMap<String, Double>> topics;
     private Set<String> measures;
 
-    /**
-     * @param filename The filename of the evaluation file.
-     * @throws IOException An Exception is thrown if the file does not exist.
-     */
+
     public TrecEvaluation(String filename) throws IOException {
         this.measures = new HashSet<>();
         this.topics = new HashMap<>();

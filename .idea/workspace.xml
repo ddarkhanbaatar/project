@@ -4,8 +4,7 @@
     <list default="true" id="5fe124c4-2a13-40cf-9910-71748a6bfda2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/Analysing.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/output/Analysing.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/Project1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/Project1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/TrecEvaluation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/TrecEvaluation.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
