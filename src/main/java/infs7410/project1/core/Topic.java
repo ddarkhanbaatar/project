@@ -14,6 +14,7 @@ public class Topic {
     private String topicId;
     private String title;
     private String[] queries;
+    private String[] orgQueries;
     private String query;
     private String booleanQueries;
     private String[] docs;
@@ -66,15 +67,15 @@ public class Topic {
     }
 
     //Combine two queries
-    public void mergeQuery(String[] booleanQueries)
-    {
-        String[] combinedQuery=new String[this.queries.length+booleanQueries.length];
-        System.arraycopy(this.queries,0,combinedQuery,0, this.queries.length);
-        System.arraycopy(booleanQueries,0,combinedQuery,this.queries.length, booleanQueries.length);
+    public void mergeQuery(String[] booleanQueries) {
+        String[] combinedQuery = new String[this.queries.length + booleanQueries.length];
+        System.arraycopy(this.queries, 0, combinedQuery, 0, this.queries.length);
+        System.arraycopy(booleanQueries, 0, combinedQuery, this.queries.length, booleanQueries.length);
 
         System.out.println(String.format("[%s] Q(t)=%d, Q(b)=%d Total=%d", this.getTopicId(), this.queries.length, booleanQueries.length, combinedQuery.length));
-        this.queries=combinedQuery;
+        this.queries = combinedQuery;
     }
+
     public String getTopicId() {
         return topicId;
     }
@@ -132,6 +133,12 @@ public class Topic {
     }
 
     public void setReductionQuery(String[] query) {
+        this.orgQueries = this.queries;
         this.queries = query;
+    }
+
+    public void resetReducedQuery() {
+        if (this.orgQueries != null)
+            this.queries = orgQueries;
     }
 }

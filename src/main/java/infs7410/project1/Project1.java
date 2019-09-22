@@ -40,6 +40,7 @@ public class Project1 {
         path.put("tar", "./input/tar/");
         path.put("output", "./output/");
         path.put("fusion", "fusion/");
+        path.put("reduction", "reduction/");
         path.put("1", "testing/");   // testing folder
         path.put("2", "training/");  // training folder
         path.put("3", "tunning/");   // tuning folder
@@ -156,7 +157,7 @@ public class Project1 {
 
 
         // Tuned value for BM25
-        double parameterB = 0.75;
+        double parameterB = 0.00;
         if (dataYear.equals("7") && queryType.equals("T")) // 2017 Title query
             parameterB = 0.00; // After tuning, no normalization
         else if (dataYear.equals("7") && queryType.equals("B")) // 2017 Boolean query
@@ -297,8 +298,8 @@ public class Project1 {
                 finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + path.get("fusion") + "run-" + fusion.toString() + ".res");
             }
             break;
-            case 6: // IDF reduction
-            case 7: // KLI reduction
+            case 6: // IDF reduction Part 2
+            case 7: // KLI reduction Part 2
             {
                 String text = (method == 6 ? "IDF" : "KLI");
                 System.out.println("------------------------------------------------------------------------");
@@ -311,16 +312,33 @@ public class Project1 {
                 model.setParameter(parameterB);
 
                 // Build path and read topics (only for testing data)
-                topicPath = path.get("tar") + path.get(dataYear) + path.get("1") + path.get("topics");
+                topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("topics");
                 topics = TopicParser.parse(topicPath, queryType, queryPath);
 
 
-                int[] rValues = new int[]{30, 50, 80};
+                int[] rValues;
+
+
+                if (dataType.equals("2")) //Tuning
+                    rValues = new int[]{30, 50, 80};
+                else { // Put optimal r value
+                    if (dataYear.equals("7")) //
+                        rValues = new int[]{30};
+                    else //2018
+                        rValues = new int[]{30};
+
+
+                }
+
                 for (int r : rValues) {
                     TrecResults finalResults = new TrecResults();
                     finalResults.setRunName(model.getInfo());
                     for (int i = 0; i < topics.size(); i++) {
                         Topic topic = topics.get(i);
+
+                        // Reset original queries
+                        topic.resetReducedQuery();
+
                         String[] reducedQueries;
 
                         if (method == 6) {
@@ -337,7 +355,9 @@ public class Project1 {
                         TrecResults results = reranker.rerank(header, topic, model, lex, invertedIndex, meta);
                         finalResults.getTrecResults().addAll(results.getTrecResults());
                     }
-                    finalResults.write(path.get("output") + path.get(dataYear) + path.get("T") + path.get(dataType) + "run-" + text + "-reduction-" + r + ".res");
+                    String outPath = path.get("output") + path.get(dataYear) + path.get("T") + path.get(dataType) + path.get("reduction") + "run-" + text + "-reduction-" + r + ".res";
+
+                    finalResults.write(outPath);
                 }
 
 
