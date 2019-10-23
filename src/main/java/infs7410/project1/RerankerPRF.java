@@ -71,11 +71,14 @@ public class RerankerPRF {
     }
 
 
-    public TrecResults rerank(String header, Topic topic, List<TrecResult> baseline, BM25_RSJ wm, Lexicon lex, PostingIndex invertedIndex, MetaIndex meta, int f, double avgDocLen) throws IOException {
+    public TrecResults rerank(
+            String header, Topic topic, List<TrecResult> baseline, BM25_RSJ wm,
+            HashMap<String, HashMap<String, Integer>> termsDocFreq,
+            HashMap<String, Integer> docLen,
+            int f, double avgDocLen) throws IOException {
 
         HashSet<String> docIdSet = new HashSet<>();
         HashMap<String, Integer> termsQueryFreq = new HashMap<>();
-        HashMap<String, HashMap<String, DocInfo>> termsDocInfo = new HashMap<>();
         long start = System.currentTimeMillis();
         TrecResults results = new TrecResults(); // Create a results list from the scored documents.
         System.out.println("baseline N:" + baseline.size());
@@ -99,37 +102,6 @@ public class RerankerPRF {
             System.out.println("________________ Finished (" + getDuration() + ")");
         }
 
-        // 2. Generate DocInfo HashMap
-        {
-            startTime();
-            System.out.println("________________ 2. Generate DocInfo HashMap");
-            for (String term : topic.getQueries()) {
-                LexiconEntry entry = lex.getLexiconEntry(term);
-                if (entry == null || termsDocInfo.containsKey(term)) continue;
-
-                IterablePosting ip = invertedIndex.getPostings(entry);
-                RelevanceValue termValue = new RelevanceValue();
-
-                HashMap<String, DocInfo> docList = new HashMap<>();
-                while (ip.next() != IterablePosting.EOL) {
-                    String docId = meta.getItem("docno", ip.getId());
-                    // Topic contains this docId
-                    if (docIdSet.contains(docId)) {
-                        DocInfo info = new DocInfo(ip.getFrequency(), ip.getDocumentLength(), topic.getQrels().relevant.containsKey(docId));
-                        docList.put(docId, info);
-//                        if (docId.equals("21412912"))
-//                            System.out.println(String.format("Term:%s, DocId:%s, Freq:%d, Len:%d", term, docId, info.getDocumentFrequency(), info.getDocumentLength()));
-                    }
-                }
-                termsDocInfo.put(term, docList);
-            }
-            // Set value for term which does not exist in any docs
-            for (String term : topic.getQueries()) {
-                if (!termsDocInfo.containsKey(term))
-                    termsDocInfo.put(term, new HashMap<>());
-            }
-            System.out.println("________________ Finished (" + getDuration() + ")");
-        }
 
         int N = 1; // The number of documents in the topic
         int R = 0; // The number of relevant documents in the topic
@@ -151,14 +123,16 @@ public class RerankerPRF {
             // Calculate small r and n for all terms in order to reduce iteration cost
             HashMap<String, RelevanceValue> termRelevance = new HashMap<>();
             for (String queryTerm : topic.getQueries()) {
-                if (!termsDocInfo.containsKey(queryTerm)) continue; // if term
+
+                if (!termsDocFreq.containsKey(queryTerm)) continue; // if term
+
                 RelevanceValue termValue = new RelevanceValue();
-                HashMap<String, DocInfo> termDocs = termsDocInfo.get(queryTerm);
+                HashMap<String, Integer> docFreq = termsDocFreq.get(queryTerm);
                 // iterate ranked docs
                 for (TrecResult doc : results.getTrecResults()) {
-                    if (termDocs.containsKey(doc.getDocID())) {
+                    if (docFreq.containsKey(doc.getDocID())) {
                         termValue.increaseN();
-                        if (termDocs.get(doc.getDocID()).isRelevant()) {
+                        if (topic.getQrels().relevant.containsKey(doc.getDocID())) {
                             termValue.increaseR();
                         }
                     }
@@ -167,7 +141,7 @@ public class RerankerPRF {
 //                    System.out.println("Term[" + queryTerm + "] - n=" + termValue.getNi() + ", r=" + termValue.getRi());
                 termRelevance.put(queryTerm, termValue);
             }
-            // System.out.println("n[i] and r[i] calculation are finished");
+
 
             // Iterate until f to use RF
             TrecResults rfDocs = new TrecResults();
@@ -176,7 +150,7 @@ public class RerankerPRF {
             for (int a = 0; a < f && a < baseline.size(); a++) {
                 TrecResult doc = baseline.get(a);
                 // Calculate total scores
-                double score = wm.totalScore(doc.getDocID(), topic.getQueries(), termsQueryFreq, termsDocInfo, termRelevance, avgDocLen, N, R, f);
+                double score = wm.totalScore(doc.getDocID(), topic.getQueries(), termsQueryFreq, termsDocFreq, docLen, termRelevance, avgDocLen, N, R, f);
 
                 rfDocs.getTrecResults().add(new TrecResult(doc.getTopic(), doc.getDocID(), score, a));
                 //if (RerankerPRF.isLog)

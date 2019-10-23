@@ -32,7 +32,6 @@ public class BM25_RSJ {
         double saturation = ((this.k1 + 1.0D) * docFeq / (k1 * B + docFeq));
         double within_query = ((this.k2 + 1.0D) * queryFeq / (this.k2 + queryFeq));
 
-
 //        if(RerankerPRF.isLog)
 //            System.out.println(String.format("weight:%f, sat:%f, query_within:%f", RJS_weight, weight2, saturation, within_query));
 
@@ -41,20 +40,20 @@ public class BM25_RSJ {
 
     public double totalScore(String docId, String[] query,
                              HashMap<String, Integer> termsQueryFreq,
-                             HashMap<String, HashMap<String, RerankerPRF.DocInfo>> termsDocInfo,
+                             HashMap<String, HashMap<String, Integer>> termsDocFreq,
+                             HashMap<String, Integer> docLen,
                              HashMap<String, RerankerPRF.RelevanceValue> termRelevance,
                              double avgDocLen, double N, double R, int f) {
         double totalScore = 0.0D;
         this.f = f;
         for (String queryTerm : query) {
-            HashMap<String, RerankerPRF.DocInfo> docList = termsDocInfo.get(queryTerm);
-            if (!docList.containsKey(docId)) continue;
+            if (!termsDocFreq.containsKey(queryTerm)) continue;
+            if (!termsDocFreq.get(queryTerm).containsKey(docId)) continue;
 
-            RerankerPRF.DocInfo docInfo = docList.get(docId);
             int queryFeq = termsQueryFreq.get(queryTerm);
-            int docFeq = docInfo.getDocumentFrequency();
-            int docLen = docInfo.getDocumentLength();
-            double score = score(queryFeq, docFeq, docLen, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
+            int feq = termsDocFreq.get(queryTerm).get(docId);
+            int len = docLen.get(docId);
+            double score = score(queryFeq, feq, len, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
 //            if(RerankerPRF.isLog)
 //                System.out.println("Term:" + queryTerm + ", Score:" + score +  ", queryReq:" + queryFeq + ", docFeq:" + docFeq + ", docLen:" + docLen);
             totalScore += score;
