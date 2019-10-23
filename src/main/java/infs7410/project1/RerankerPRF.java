@@ -81,7 +81,7 @@ public class RerankerPRF {
         System.out.println("baseline N:" + baseline.size());
 
         // Set document set
-        for(TrecResult trecResult:baseline)
+        for (TrecResult trecResult : baseline)
             docIdSet.add(trecResult.getDocID());
 
         // 1. Calculation of Term Frequency in the query
@@ -176,7 +176,7 @@ public class RerankerPRF {
             for (int a = 0; a < f && a < baseline.size(); a++) {
                 TrecResult doc = baseline.get(a);
                 // Calculate total scores
-                double score = wm.totalScore(doc.getDocID(), topic.getQueries(), termsQueryFreq, termsDocInfo, termRelevance, avgDocLen, N, R);
+                double score = wm.totalScore(doc.getDocID(), topic.getQueries(), termsQueryFreq, termsDocInfo, termRelevance, avgDocLen, N, R, f);
 
                 rfDocs.getTrecResults().add(new TrecResult(doc.getTopic(), doc.getDocID(), score, a));
                 //if (RerankerPRF.isLog)

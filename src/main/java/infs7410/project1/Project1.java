@@ -466,7 +466,7 @@ public class Project1 {
                     // ################################# Read ranked file ################################
                     String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
                     TrecResults resultsBM25 = new TrecResults(pathBM25);
-                    BM25_RSJ bm = new BM25_RSJ(0, 1, 3);
+                    BM25_RSJ bm = new BM25_RSJ(0.75, 1.2, 2);
                     // --------------------------------------------------------------------------------------------
 
                     TrecResults finalResults = new TrecResults();
@@ -478,7 +478,7 @@ public class Project1 {
                         Topic topic = topicsWithQrel.get(i);
                         System.out.println("NonRelevant:" + topic.getQrels().nonRelevant.size() + ", Relevant:" + topic.getQrels().relevant.size());
                         List<TrecResult> baseline = resultsBM25.getTrecResults(topic.getTopicId());
-                        TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 5, index.getCollectionStatistics().getAverageDocumentLength());
+                        TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 20, index.getCollectionStatistics().getAverageDocumentLength());
                         finalResults.getTrecResults().addAll(results.getTrecResults());
                     }
                     finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");

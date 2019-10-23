@@ -10,15 +10,17 @@ public class BM25_RSJ {
     private double k1 = 1.2D;
     private double b = 0.00D;
     private double k2 = 8.0D;
+    private int f = 0;
 
     public BM25_RSJ(double b, double k1, double k2) {
         this.k1 = k1;
         this.k2 = k2;
         this.b = b;
+
     }
 
     public String getInfo() {
-        return "BM25-k1_" + this.k1 + "-k2_" + this.k2 + "-b_" + this.b + "";
+        return "BM25-k1_" + this.k1 + "-k2_" + this.k2 + "-b_" + this.b + "-f" + f;
     }
 
     public double score(double queryFeq, int docFeq, int docLen, double avgDocLen, double N, double n, double R, double r) {
@@ -30,6 +32,7 @@ public class BM25_RSJ {
         double saturation = ((this.k1 + 1.0D) * docFeq / (k1 * B + docFeq));
         double within_query = ((this.k2 + 1.0D) * queryFeq / (this.k2 + queryFeq));
 
+
 //        if(RerankerPRF.isLog)
 //            System.out.println(String.format("weight:%f, sat:%f, query_within:%f", RJS_weight, weight2, saturation, within_query));
 
@@ -40,9 +43,9 @@ public class BM25_RSJ {
                              HashMap<String, Integer> termsQueryFreq,
                              HashMap<String, HashMap<String, RerankerPRF.DocInfo>> termsDocInfo,
                              HashMap<String, RerankerPRF.RelevanceValue> termRelevance,
-                             double avgDocLen, double N, double R) {
+                             double avgDocLen, double N, double R, int f) {
         double totalScore = 0.0D;
-
+        this.f = f;
         for (String queryTerm : query) {
             HashMap<String, RerankerPRF.DocInfo> docList = termsDocInfo.get(queryTerm);
             if (!docList.containsKey(docId)) continue;
