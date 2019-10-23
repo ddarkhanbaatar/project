@@ -91,7 +91,7 @@ public class Project1 {
             System.out.println("Value:");
 
             method = in.nextInt();
-            if (method > 10 || method < 1) {
+            if (method > 11 || method < 1) {
                 System.out.println("The method is invalid !!!");
                 return;
             }
@@ -486,8 +486,8 @@ public class Project1 {
                 break;
                 case 11: {
                     String text = "BM25 RSJ + PRF - Tunning";
-                    double[] bSet = new double[]{0.0D, 0.5D, 1.0D};
-                    double[] k1Set = new double[]{0.5D, 1.2D, 2.0D};
+                    double[] bSet = new double[]{0.0D, 1.0D};
+                    double[] k1Set = new double[]{1.2D, 2.0D};
                     RerankerPRF prf = new RerankerPRF();
                     queryType = "T";
                     System.out.println("------------------------------------------------------------------------");
