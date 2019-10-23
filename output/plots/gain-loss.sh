@@ -47,3 +47,17 @@ python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2
 python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2018-title-CombSUM.eval Rprec 2018-title-BM25-vs-CombSUM-rprec.png
 python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2018-title-CombMNZ.eval Rprec 2018-title-BM25-vs-CombMNZ-rprec.png
 echo "6. 2018 - Title query Rprec : Completed"
+
+# Reduction - Rprec
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2017-IDF-reduction-80.eval Rprec 2017-title-BM25-vs-IDFr-rprec.png
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2017-KLI-reduction-80.eval Rprec 2017-title-BM25-vs-KLI-rprec.png
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2018-IDF-reduction-80.eval Rprec 2018-title-BM25-vs-IDFr-rprec.png
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2018-KLI-reduction-80.eval Rprec 2018-title-BM25-vs-KLI-rprec.png
+echo "7. Reduction forRprec : Completed"
+
+# Reduction - map
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2017-IDF-reduction-80.eval map 2017-title-BM25-vs-IDFr.png
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2017-KLI-reduction-80.eval map 2017-title-BM25-vs-KLI.png
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2018-IDF-reduction-80.eval map 2018-title-BM25-vs-IDFr.png
+python3.6 ../../python/gainloss_plot.py ../evals/2018-title-BM25.eval ../evals/2018-KLI-reduction-80.eval map 2018-title-BM25-vs-KLI.png
+echo "8. Reduction forRprec : Completed"

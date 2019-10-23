@@ -1,21 +1,21 @@
 package infs7410.project1;
 
 import infs7410.project1.core.*;
+import infs7410.project1.part3.BM25_RSJ;
 import infs7410.project1.ranking.Borda;
 import infs7410.project1.ranking.CombMNZ;
 import infs7410.project1.ranking.CombSUM;
 import infs7410.project1.ranking.Fusion;
 import infs7410.project1.reduction.IDFReduction;
 import infs7410.project1.reduction.KLIReduction;
+import org.apache.commons.math3.stat.inference.TTest;
 import org.terrier.matching.models.BM25;
 import org.terrier.matching.models.TF_IDF;
 import org.terrier.matching.models.WeightingModel;
 import org.terrier.querying.*;
 import org.terrier.structures.*;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 
@@ -49,6 +49,7 @@ public class Project1 {
         path.put("B", "boolean/");   // Boolean query folder
         path.put("T", "title/");     // Title query folder
         path.put("topics", "topics");
+        path.put("qrels", "qrels/qrels.txt");
 
 
         // Main variables
@@ -85,10 +86,12 @@ public class Project1 {
             System.out.println("\t6. IDF reduction");
             System.out.println("\t7. KLI reduction");
             System.out.println("\t8. Parsing Boolean query");
+            System.out.println("\t9. p-Values");
+            System.out.println("\t10. [Part 3] BM25 RSJ");
             System.out.println("Value:");
 
             method = in.nextInt();
-            if (method > 8 || method < 1) {
+            if (method > 10 || method < 1) {
                 System.out.println("The method is invalid !!!");
                 return;
             }
@@ -154,225 +157,336 @@ public class Project1 {
                 }
             }
         }
+        try {
 
+            // Tuned value for BM25
+            double parameterB = 0.00;
+            if (dataYear.equals("7") && queryType.equals("T")) // 2017 Title query
+                parameterB = 0.00; // After tuning, no normalization
+            else if (dataYear.equals("7") && queryType.equals("B")) // 2017 Boolean query
+                parameterB = 0.00; // After tuning
+            else if (dataYear.equals("8") && queryType.equals("T")) // 2018 Title query
+                parameterB = 0.00; // After tuning, no normalization
+            else // 2018 Boolean query
+                parameterB = 0.00; // After tuning
 
-        // Tuned value for BM25
-        double parameterB = 0.00;
-        if (dataYear.equals("7") && queryType.equals("T")) // 2017 Title query
-            parameterB = 0.00; // After tuning, no normalization
-        else if (dataYear.equals("7") && queryType.equals("B")) // 2017 Boolean query
-            parameterB = 0.00; // After tuning
-        else if (dataYear.equals("8") && queryType.equals("T")) // 2018 Title query
-            parameterB = 0.00; // After tuning, no normalization
-        else // 2018 Boolean query
-            parameterB = 0.00; // After tuning
+            // For using to write or read
+            String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType) + "boolean_terms.txt";
 
-        // For using to write or read
-        String queryPath = path.get("output") + path.get(dataYear) + path.get("B") + path.get(dataType) + "boolean_terms.txt";
-
-        switch (method) {
-            case 2: //BM25
-            case 1: //TF_IDF
-            {
-                if (method == 1) {
-                    model = new TF_IDF();
-                    model.setCollectionStatistics(index.getCollectionStatistics());
-                } else {
-                    System.out.println("Optimal b=" + parameterB);
-                    model = new BM25();
-                    model.setCollectionStatistics(index.getCollectionStatistics());
-                    model.setParameter(parameterB);
-                }
-
-
-                // Build path and read topics
-                topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType, queryPath);
-
-
-                if (dataType.equals("3")) // Tunning for only first topic and for only BM25
+            switch (method) {
+                case 2: //BM25
+                case 1: //TF_IDF
                 {
-                    // 0 <= b <= 1
-                    // b=0 No normalization
+                    if (method == 1) {
+                        model = new TF_IDF();
+                        model.setCollectionStatistics(index.getCollectionStatistics());
+                    } else {
+                        System.out.println("Optimal b=" + parameterB);
+                        model = new BM25();
+                        model.setCollectionStatistics(index.getCollectionStatistics());
+                        model.setParameter(parameterB);
+                    }
 
-                    System.out.println("------------------------------------------------------------------------");
-                    System.out.println("Start tuning:");
-                    double[] b = new double[]{
-                            0.00, 0.25, 0.50, 0.75, 1.00
-                    };
 
-                    for (int i = 0; i < b.length; i++) {
+                    // Build path and read topics
+                    topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
+                    topics = TopicParser.parse(topicPath, queryType, queryPath);
+
+
+                    if (dataType.equals("3")) // Tunning for only first topic and for only BM25
+                    {
+                        // 0 <= b <= 1
+                        // b=0 No normalization
+
+                        System.out.println("------------------------------------------------------------------------");
+                        System.out.println("Start tuning:");
+                        double[] b = new double[]{
+                                0.00, 0.25, 0.50, 0.75, 1.00
+                        };
+
+                        for (int i = 0; i < b.length; i++) {
+                            TrecResults finalResults = new TrecResults();
+                            finalResults.setRunName(model.getInfo());
+
+                            for (int t = 0; t < topics.size(); t++) {
+                                model.setParameter(b[i]);
+                                Topic topic = topics.get(t);
+                                TrecResults results = reranker.rerank("b=" + b[i] + ", topic: " + (t + 1) + "/" + topics.size(), topic, model, lex, invertedIndex, meta);
+                                finalResults.getTrecResults().addAll(results.getTrecResults());
+                            }
+                            finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + model.getInfo() + ".res");
+                        }
+                    } else { //Testing and training data
+                        System.out.println("------------------------------------------------------------------------");
+                        System.out.println("Start ranking [" + model.getInfo() + "] ");
+
                         TrecResults finalResults = new TrecResults();
                         finalResults.setRunName(model.getInfo());
 
-                        for (int t = 0; t < topics.size(); t++) {
-                            model.setParameter(b[i]);
-                            Topic topic = topics.get(t);
-                            TrecResults results = reranker.rerank("b=" + b[i] + ", topic: " + (t + 1) + "/" + topics.size(), topic, model, lex, invertedIndex, meta);
+                        for (int i = 0; i < topics.size(); i++) {
+                            Topic topic = topics.get(i);
+                            TrecResults results = reranker.rerank((i + 1) + "/" + topics.size(), topic, model, lex, invertedIndex, meta);
                             finalResults.getTrecResults().addAll(results.getTrecResults());
                         }
                         finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + model.getInfo() + ".res");
                     }
-                } else { //Testing and training data
-                    System.out.println("------------------------------------------------------------------------");
-                    System.out.println("Start ranking [" + model.getInfo() + "] ");
+                    break;
+                }
+                case 3: // Borda
+                case 4: // CombSUM
+                case 5: // CombMNZ
+                {
+                    Fusion fusion;
+                    if (method == 3)
+                        fusion = new Borda();
+                    else if (method == 4)
+                        fusion = new CombSUM();
+                    else
+                        fusion = new CombMNZ();
+
+
+                    String externalFiles = path.get("runs") + path.get(dataYear);
+                    String internalFiles = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1");
+                    List<TrecResults> docs = new ArrayList<>();
+                    Normaliser norm = new MinMax();
+
+                    // Only files
+                    FileFilter filter = new FileFilter() {
+                        @Override
+                        public boolean accept(File pathname) {
+                            return (pathname.isFile() && pathname.getName().toLowerCase().endsWith(".res"));
+                        }
+                    };
+                    // Run files are reading
+                    File[] externalList = (new File(externalFiles)).listFiles(filter);
+                    int f = 1;
+                    if (externalList != null)
+                        for (File file : externalList) {
+                            System.out.println(f++ + ". File: " + file.getPath());
+                            docs.add(new TrecResults(file.getPath()));
+                        }
+
+                    File[] internalList = (new File(internalFiles)).listFiles(filter);
+                    f = 1;
+                    if (internalList != null)
+                        // Result files are reading
+                        for (File file : internalList) {
+                            System.out.println(f++ + ". File: " + file.getPath());
+                            docs.add(new TrecResults(file.getPath()));
+                        }
+
+                    // Normalise the scores of each run.
+                    for (TrecResults doc : docs) {
+                        norm.init(doc);
+                        for (int j = 0; j < doc.getTrecResults().size(); j++) {
+                            double normScore = norm.normalise(doc.getTrecResults().get(j));
+                            doc.getTrecResults().get(j).setScore(normScore);
+                        }
+                    }
 
                     TrecResults finalResults = new TrecResults();
-                    finalResults.setRunName(model.getInfo());
+                    finalResults.setRunName(fusion.toString());
 
-                    for (int i = 0; i < topics.size(); i++) {
+                    Set<String> topicList = docs.get(0).getTopics();
+                    for (String topic : topicList) {
+                        List<TrecResults> topicResults = new ArrayList<>();
+                        for (TrecResults r : docs) {
+                            // Add results based on topic name
+                            topicResults.add(new TrecResults(r.getTrecResults(topic)));
+                        }
+
+                        // Fuse the results together and write the new results list to disk.
+                        finalResults.getTrecResults().addAll(fusion.Fuse(topicResults).getTrecResults());
+                    }
+                    finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + path.get("fusion") + "run-" + fusion.toString() + ".res");
+                }
+                break;
+                case 6: // IDF reduction Part 2
+                case 7: // KLI reduction Part 2
+                {
+                    String text = (method == 6 ? "IDF" : "KLI");
+                    System.out.println("------------------------------------------------------------------------");
+                    System.out.println("Start ranking by using reduction [" + text + "] ");
+
+                    // Set tuning value in BM25
+                    System.out.println("Optimal b=" + parameterB);
+                    model = new BM25();
+                    model.setCollectionStatistics(index.getCollectionStatistics());
+                    model.setParameter(parameterB);
+
+                    // Build path and read topics (only for testing data)
+                    topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("topics");
+                    topics = TopicParser.parse(topicPath, queryType, queryPath);
+
+
+                    int[] rValues;
+
+
+                    if (dataType.equals("2")) //Tuning
+                        rValues = new int[]{30, 50, 80};
+                    else { // Put optimal r value
+                        // both KLI and IDFr are same high value on 2017 and 2018 dataset. It is r=80% stay
+                        rValues = new int[]{80};
+                    }
+
+                    for (int r : rValues) {
+                        TrecResults finalResults = new TrecResults();
+                        finalResults.setRunName(model.getInfo());
+                        for (int i = 0; i < topics.size(); i++) {
+                            Topic topic = topics.get(i);
+
+                            // Reset original queries
+                            topic.resetReducedQuery();
+
+                            String[] reducedQueries;
+
+                            if (method == 6) {
+                                IDFReduction reduction = new IDFReduction();
+                                reducedQueries = reduction.reduce(topic.getQueries(), r, index.getIndexRef());
+                            } else {
+                                KLIReduction reduction = new KLIReduction();
+                                reducedQueries = reduction.reduce(topic.getQueries(), topic.getDocs(), r, index.getIndexRef());
+                            }
+
+                            String header = String.format("%d percent - %d/%d . Queries %d -> %d", r, i + 1, topics.size(), topic.getQueries().length, reducedQueries.length);
+                            // Rank by using reduced queries
+                            topic.setReductionQuery(reducedQueries);
+                            TrecResults results = reranker.rerank(header, topic, model, lex, invertedIndex, meta);
+                            finalResults.getTrecResults().addAll(results.getTrecResults());
+                        }
+                        String outPath = path.get("output") + path.get(dataYear) + path.get("T") + path.get(dataType) + path.get("reduction") + "run-" + text + "-reduction-" + r + ".res";
+
+                        finalResults.write(outPath);
+                    }
+
+
+                }
+                break;
+                case 8: // Parse Boolean Queries
+                {
+                    // Build path and read topics
+                    topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
+                    topics = TopicParser.parse(topicPath, queryType, queryPath);
+                    System.out.println("------------------------------------------------------------------------");
+                    System.out.println("Start parsing Boolean query ");
+                    BooleanQueryParser parser = new BooleanQueryParser();
+                    parser.parseBooleanQuery(topics, index.getIndexRef(), queryPath);
+                }
+                break;
+                case 9: {
+                    HashMap<String, OutputFile[]> plist = new HashMap<>();
+                    plist.put("2017T", new OutputFile[]{
+                            new OutputFile("2017-IDF-reduction-80.eval", "IDFr", "2017", "Title"),
+                            new OutputFile("2017-KLI-reduction-80.eval", "KLI", "2017", "Title"),
+                            new OutputFile("2017-title-BM25.eval", "BM25", "2017", "Title"),
+                            new OutputFile("2017-title-Borda.eval", "Borda", "2017", "Title"),
+                            new OutputFile("2017-title-CombMNZ.eval", "CombMNZ", "2017", "Title"),
+                            new OutputFile("2017-title-CombSUM.eval", "CombSUM", "2017", "Title"),
+                            new OutputFile("2017-title-TF_IDF.eval", "TF-IDF", "2017", "Title")
+                    });
+
+                    plist.put("2018T", new OutputFile[]{
+                            new OutputFile("2018-IDF-reduction-80.eval", "IDFr", "2018", "Title"),
+                            new OutputFile("2018-KLI-reduction-80.eval", "KLI", "2018", "Title"),
+                            new OutputFile("2018-title-BM25.eval", "BM25", "2018", "Title"),
+                            new OutputFile("2018-title-Borda.eval", "Borda", "2018", "Title"),
+                            new OutputFile("2018-title-CombMNZ.eval", "CombMNZ", "2018", "Title"),
+                            new OutputFile("2018-title-CombSUM.eval", "CombSUM", "2018", "Title"),
+                            new OutputFile("2018-title-TF_IDF.eval", "TF-IDF", "2018", "Title")
+                    });
+
+                    plist.put("2017B", new OutputFile[]{
+                            new OutputFile("2017-boolean-BM25.eval", "BM25", "2017", "Boolean"),
+                            new OutputFile("2017-boolean-Borda.eval", "Borda", "2017", "Boolean"),
+                            new OutputFile("2017-boolean-CombMNZ.eval", "CombMNZ", "2017", "Boolean"),
+                            new OutputFile("2017-boolean-CombSUM.eval", "CombSUM", "2017", "Boolean"),
+                            new OutputFile("2017-boolean-TF_IDF.eval", "TF-IDF", "2017", "Boolean")
+                    });
+
+                    plist.put("2018B", new OutputFile[]{
+                            new OutputFile("2018-boolean-BM25.eval", "BM25", "2018", "Boolean"),
+                            new OutputFile("2018-boolean-Borda.eval", "Borda", "2018", "Boolean"),
+                            new OutputFile("2018-boolean-CombMNZ.eval", "CombMNZ", "2018", "Boolean"),
+                            new OutputFile("2018-boolean-CombSUM.eval", "SUM", "2018", "Boolean"),
+                            new OutputFile("2018-boolean-TF_IDF.eval", "TF-IDF", "2018", "Boolean")
+                    });
+
+                    String basePath = path.get("output") + "evals/";
+                    String testPath = path.get("output") + "evals/t-test.txt";
+                    String[] measures = new String[]{"Rprec", "map"};
+                    int i = 0;
+
+                    try (FileWriter writer = new FileWriter(testPath);
+                         BufferedWriter bw = new BufferedWriter(writer)) {
+                        for (String measure : measures) {
+                            for (String k : plist.keySet()) {
+                                OutputFile[] files = plist.get(k);
+                                for (OutputFile f1 : files) {
+                                    for (OutputFile f2 : files) {
+                                        if (!f1.getFileName().equals(f2.getFileName())) {
+                                            TrecEvaluation file1 = new TrecEvaluation(basePath + f1.getFileName());
+                                            TrecEvaluation file2 = new TrecEvaluation(basePath + f2.getFileName());
+
+                                            double[] scores1 = file1.getScoresForMeasure(measure);
+                                            double[] scores2 = file2.getScoresForMeasure(measure);
+
+                                            TTest tTest = new TTest();
+                                            double pvalue = tTest.pairedTTest(scores1, scores2);
+                                            // Output the result so we can see it on the screen later.
+                                            System.out.printf("%d, p-value for files %s and %s given measure %s: %f\n", ++i, f1.getFileName(), f2.getFileName(), measure, pvalue);
+                                            bw.write(String.format("%s,%s,%s,%s,%s,%s\n", f1.getYear(), f1.getType(), f1.getMethod(), f2.getMethod(), measure, pvalue));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.err.format("IOException: %s%n", e);
+                    }
+                    break;
+                }
+
+                case 10: {
+                    String text = "BM25 RSJ + PRF";
+                    RerankerPRF prf = new RerankerPRF();
+                    queryType = "T";
+                    System.out.println("------------------------------------------------------------------------");
+                    System.out.println("Start ranking by using [" + text + "] ");
+
+                    // Build path and read topics (only for testing data)
+                    topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("topics");
+                    String qrelPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("qrels");
+
+                    // Topic files read in order to prepare query
+                    topics = TopicParser.parse(topicPath, queryType, queryPath);
+                    // Qrel judgement read
+                    ArrayList<Topic> topicsWithQrel = TopicParser.parseQrel(qrelPath, topics);
+
+                    // ################################# Read ranked file ################################
+                    String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
+                    TrecResults resultsBM25 = new TrecResults(pathBM25);
+                    System.out.println("BM25 Result Topics:" + resultsBM25.getTopics().size());
+                    BM25_RSJ bm = new BM25_RSJ(0, 1, 3);
+                    // --------------------------------------------------------------------------------------------
+
+                    TrecResults finalResults = new TrecResults();
+                    finalResults.setRunName(text);
+
+
+                    for (int i = 0; i < 1/*topics.size()*/; i++) {
                         Topic topic = topics.get(i);
-                        TrecResults results = reranker.rerank((i + 1) + "/" + topics.size(), topic, model, lex, invertedIndex, meta);
+                        List<TrecResult> baseline = resultsBM25.getTrecResults(topic.getTopicId());
+                        TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 3, index.getCollectionStatistics().getAverageDocumentLength());
                         finalResults.getTrecResults().addAll(results.getTrecResults());
                     }
-                    finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + model.getInfo() + ".res");
+                    finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");
                 }
                 break;
             }
-            case 3: // Borda
-            case 4: // CombSUM
-            case 5: // CombMNZ
-            {
-                Fusion fusion;
-                if (method == 3)
-                    fusion = new Borda();
-                else if (method == 4)
-                    fusion = new CombSUM();
-                else
-                    fusion = new CombMNZ();
 
-
-                String externalFiles = path.get("runs") + path.get(dataYear);
-                String internalFiles = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1");
-                List<TrecResults> docs = new ArrayList<>();
-                Normaliser norm = new MinMax();
-
-                // Only files
-                FileFilter filter = new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return (pathname.isFile() && pathname.getName().toLowerCase().endsWith(".res"));
-                    }
-                };
-                // Run files are reading
-                File[] externalList = (new File(externalFiles)).listFiles(filter);
-                int f = 1;
-                if (externalList != null)
-                    for (File file : externalList) {
-                        System.out.println(f++ + ". File: " + file.getPath());
-                        docs.add(new TrecResults(file.getPath()));
-                    }
-
-                File[] internalList = (new File(internalFiles)).listFiles(filter);
-                f = 1;
-                if (internalList != null)
-                    // Result files are reading
-                    for (File file : internalList) {
-                        System.out.println(f++ + ". File: " + file.getPath());
-                        docs.add(new TrecResults(file.getPath()));
-                    }
-
-                // Normalise the scores of each run.
-                for (TrecResults doc : docs) {
-                    norm.init(doc);
-                    for (int j = 0; j < doc.getTrecResults().size(); j++) {
-                        double normScore = norm.normalise(doc.getTrecResults().get(j));
-                        doc.getTrecResults().get(j).setScore(normScore);
-                    }
-                }
-
-                TrecResults finalResults = new TrecResults();
-                finalResults.setRunName(fusion.toString());
-
-                Set<String> topicList = docs.get(0).getTopics();
-                for (String topic : topicList) {
-                    List<TrecResults> topicResults = new ArrayList<>();
-                    for (TrecResults r : docs) {
-                        // Add results based on topic name
-                        topicResults.add(new TrecResults(r.getTrecResults(topic)));
-                    }
-
-                    // Fuse the results together and write the new results list to disk.
-                    finalResults.getTrecResults().addAll(fusion.Fuse(topicResults).getTrecResults());
-                }
-                finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get("1") + path.get("fusion") + "run-" + fusion.toString() + ".res");
-            }
-            break;
-            case 6: // IDF reduction Part 2
-            case 7: // KLI reduction Part 2
-            {
-                String text = (method == 6 ? "IDF" : "KLI");
-                System.out.println("------------------------------------------------------------------------");
-                System.out.println("Start ranking by using reduction [" + text + "] ");
-
-                // Set tuning value in BM25
-                System.out.println("Optimal b=" + parameterB);
-                model = new BM25();
-                model.setCollectionStatistics(index.getCollectionStatistics());
-                model.setParameter(parameterB);
-
-                // Build path and read topics (only for testing data)
-                topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType, queryPath);
-
-
-                int[] rValues;
-
-
-                if (dataType.equals("2")) //Tuning
-                    rValues = new int[]{30, 50, 80};
-                else { // Put optimal r value
-                    // both KLI and IDFr are same high value on 2017 and 2018 dataset. It is r=80% stay
-                    rValues = new int[]{80};
-                }
-
-                for (int r : rValues) {
-                    TrecResults finalResults = new TrecResults();
-                    finalResults.setRunName(model.getInfo());
-                    for (int i = 0; i < topics.size(); i++) {
-                        Topic topic = topics.get(i);
-
-                        // Reset original queries
-                        topic.resetReducedQuery();
-
-                        String[] reducedQueries;
-
-                        if (method == 6) {
-                            IDFReduction reduction = new IDFReduction();
-                            reducedQueries = reduction.reduce(topic.getQueries(), r, index.getIndexRef());
-                        } else {
-                            KLIReduction reduction = new KLIReduction();
-                            reducedQueries = reduction.reduce(topic.getQueries(), topic.getDocs(), r, index.getIndexRef());
-                        }
-
-                        String header = String.format("%d percent - %d/%d . Queries %d -> %d", r, i + 1, topics.size(), topic.getQueries().length, reducedQueries.length);
-                        // Rank by using reduced queries
-                        topic.setReductionQuery(reducedQueries);
-                        TrecResults results = reranker.rerank(header, topic, model, lex, invertedIndex, meta);
-                        finalResults.getTrecResults().addAll(results.getTrecResults());
-                    }
-                    String outPath = path.get("output") + path.get(dataYear) + path.get("T") + path.get(dataType) + path.get("reduction") + "run-" + text + "-reduction-" + r + ".res";
-
-                    finalResults.write(outPath);
-                }
-
-
-            }
-            break;
-            case 8: // Parse Boolean Queries
-            {
-                // Build path and read topics
-                topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType.equals("3") ? "2" : dataType) + path.get("topics");
-                topics = TopicParser.parse(topicPath, queryType, queryPath);
-                System.out.println("------------------------------------------------------------------------");
-                System.out.println("Start parsing Boolean query ");
-                BooleanQueryParser parser = new BooleanQueryParser();
-                parser.parseBooleanQuery(topics, index.getIndexRef(), queryPath);
-            }
-            break;
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
 

@@ -1,6 +1,7 @@
 package infs7410.project1.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,5 +40,38 @@ public class TopicParser {
         System.out.printf("Topics No:%d,  Total Queries: %d, Total Pids: %d, Time %d:%d\n", result.size(), q, d, second / 60, second % 60);
 
         return result;
+    }
+
+    public static ArrayList<Topic> parseQrel(String qrelPath, ArrayList<Topic> topics) {
+
+        HashMap<String, Qrel> result = new HashMap<>();
+        try (Scanner scanner = new Scanner(new File(qrelPath));) {
+            scanner.useDelimiter("\n");
+            while (scanner.hasNext()) {
+                String line = scanner.next();
+                String[] values = line.split("\\s+");
+                String topic = values[0];
+                String docid = values[2];
+                Boolean relevant = Integer.parseInt(values[3]) == 1;
+
+                if (!result.containsKey(topic)) {
+                    result.put(topic, new Qrel());
+                }
+
+                if (relevant)
+                    result.get(topic).relevant.put(docid, true);
+                else
+                    result.get(topic).nonRelevant.put(docid, false);
+            }
+            System.out.println("Qrels file has been read:"+result.size());
+            // Assign values
+            for(int i=0;i<topics.size();i++){
+                topics.get(i).setQrels(result.get(topics.get(i).getTopicId()));
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return topics;
     }
 }

@@ -49,3 +49,11 @@ echo "2018 - Boolean query : Completed"
 ./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels2018 "${title2018}/fusion/run-CombSUM.res" > "${eval_path}/2018-title-CombSUM.eval"
 ./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels2018 "${title2018}/fusion/run-CombMNZ.res" > "${eval_path}/2018-title-CombMNZ.eval" 
 echo "2018 - Title query : Completed"
+
+
+# 2017 - Reduction
+./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels2017 "${title2017}/reduction/run-IDF-reduction-80.res" > "${eval_path}/2017-IDF-reduction-80.eval"
+./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels2017 "${title2017}/reduction/run-KLI-reduction-80.res" > "${eval_path}/2017-KLI-reduction-80.eval"
+./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels2018 "${title2018}/reduction/run-IDF-reduction-80.res" > "${eval_path}/2018-IDF-reduction-80.eval"
+./trec_eval -q -m map -m ndcg -m ndcg_cut -m P -m Rprec $qrels2018 "${title2018}/reduction/run-KLI-reduction-80.res" > "${eval_path}/2018-KLI-reduction-80.eval"
+echo "Reduction completed"

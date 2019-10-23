@@ -19,6 +19,7 @@ public class Topic {
     private String booleanQueries;
     private String[] docs;
     private String fileName;
+    private Qrel qrels;
 
     public Topic() {
 
@@ -140,5 +141,13 @@ public class Topic {
     public void resetReducedQuery() {
         if (this.orgQueries != null)
             this.queries = orgQueries;
+    }
+
+    public Qrel getQrels() {
+        return qrels;
+    }
+
+    public void setQrels(Qrel qrels) {
+        this.qrels = qrels;
     }
 }

@@ -5,6 +5,7 @@ public class TrecResult implements Comparable<TrecResult> {
     private String docID;
     private int rank;
     private double score;
+    private int originalIndex;
 
     private String runName;
 
@@ -14,6 +15,15 @@ public class TrecResult implements Comparable<TrecResult> {
         this.rank = rank;
         this.score = score;
         this.runName = runName;
+    }
+
+    public TrecResult(String topic, String docID, double score, int originalIndex) {
+        this.topic = topic;
+        this.docID = docID;
+        this.rank = 0;
+        this.score = score;
+        this.runName = "";
+        this.originalIndex = originalIndex;
     }
 
     public String getTopic() {
@@ -55,5 +65,13 @@ public class TrecResult implements Comparable<TrecResult> {
 
     public String toString() {
         return String.format("%s 0 %s %d %f %s", topic, docID, rank, score, runName);
+    }
+
+    public int getOriginalIndex() {
+        return originalIndex;
+    }
+
+    public void setOriginalIndex(int originalIndex) {
+        this.originalIndex = originalIndex;
     }
 }
