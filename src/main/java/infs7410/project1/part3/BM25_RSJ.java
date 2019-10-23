@@ -29,8 +29,9 @@ public class BM25_RSJ {
         double RJS_weight = Math.log(weight1 / weight2);
         double saturation = ((this.k1 + 1.0D) * docFeq / (k1 * B + docFeq));
         double within_query = ((this.k2 + 1.0D) * queryFeq / (this.k2 + queryFeq));
-        //System.out.println("N:" + N + ", R:" + R + ", queryReq:" + queryFeq + ", docFeq:" + docFeq + ", docLen:" + docLen + ", avgDocLen:" + avgDocLen);
-        //System.out.println(String.format("w1:%f, w2:%f, sat:%f, query_within:%f", weight1, weight2, saturation, within_query));
+
+//        if(RerankerPRF.isLog)
+//            System.out.println(String.format("weight:%f, sat:%f, query_within:%f", RJS_weight, weight2, saturation, within_query));
 
         return RJS_weight * saturation * within_query;
     }
@@ -51,7 +52,8 @@ public class BM25_RSJ {
             int docFeq = docInfo.getDocumentFrequency();
             int docLen = docInfo.getDocumentLength();
             double score = score(queryFeq, docFeq, docLen, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
-            // System.out.println("Term:" + queryTerm + ", Score:" + score);
+//            if(RerankerPRF.isLog)
+//                System.out.println("Term:" + queryTerm + ", Score:" + score +  ", queryReq:" + queryFeq + ", docFeq:" + docFeq + ", docLen:" + docLen);
             totalScore += score;
         }
 

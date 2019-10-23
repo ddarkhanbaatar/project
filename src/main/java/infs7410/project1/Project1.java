@@ -462,10 +462,10 @@ public class Project1 {
                     // Qrel judgement read
                     ArrayList<Topic> topicsWithQrel = TopicParser.parseQrel(qrelPath, topics);
 
+
                     // ################################# Read ranked file ################################
                     String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
                     TrecResults resultsBM25 = new TrecResults(pathBM25);
-                    System.out.println("BM25 Result Topics:" + resultsBM25.getTopics().size());
                     BM25_RSJ bm = new BM25_RSJ(0, 1, 3);
                     // --------------------------------------------------------------------------------------------
 
@@ -473,13 +473,54 @@ public class Project1 {
                     finalResults.setRunName(text);
 
 
-                    for (int i = 0; i < 1/*topics.size()*/; i++) {
-                        Topic topic = topics.get(i);
+                    for (int i = 0; i < topicsWithQrel.size(); i++) {
+
+                        Topic topic = topicsWithQrel.get(i);
+                        System.out.println("NonRelevant:" + topic.getQrels().nonRelevant.size() + ", Relevant:" + topic.getQrels().relevant.size());
                         List<TrecResult> baseline = resultsBM25.getTrecResults(topic.getTopicId());
-                        TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 3, index.getCollectionStatistics().getAverageDocumentLength());
+                        TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 5, index.getCollectionStatistics().getAverageDocumentLength());
                         finalResults.getTrecResults().addAll(results.getTrecResults());
                     }
                     finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");
+                }
+                break;
+                case 11: {
+                    String text = "BM25 RSJ + PRF - Tunning";
+                    double[] bSet = new double[]{0.0D, 0.5D, 1.0D};
+                    double[] k1Set = new double[]{0.5D, 1.2D, 2.0D};
+                    RerankerPRF prf = new RerankerPRF();
+                    queryType = "T";
+                    System.out.println("------------------------------------------------------------------------");
+                    System.out.println("Start ranking by using [" + text + "] ");
+
+                    // Build path and read topics (only for testing data)
+                    topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("topics");
+                    String qrelPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("qrels");
+
+                    // Topic files read in order to prepare query
+                    topics = TopicParser.parse(topicPath, queryType, queryPath);
+                    // Qrel judgement read
+                    ArrayList<Topic> topicsWithQrel = TopicParser.parseQrel(qrelPath, topics);
+
+
+                    // ################################# Read ranked file ################################
+                    String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
+                    TrecResults resultsBM25 = new TrecResults(pathBM25);
+                    for (double k1 : k1Set)
+                        for (double b : bSet) {
+                            BM25_RSJ bm = new BM25_RSJ(b, k1, 0.2);
+                            TrecResults finalResults = new TrecResults();
+                            finalResults.setRunName(text);
+
+                            for (int i = 0; i < topicsWithQrel.size(); i++) {
+
+                                Topic topic = topicsWithQrel.get(i);
+                                List<TrecResult> baseline = resultsBM25.getTrecResults(topic.getTopicId());
+                                TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 5, index.getCollectionStatistics().getAverageDocumentLength());
+                                finalResults.getTrecResults().addAll(results.getTrecResults());
+                            }
+                            finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");
+                        }
                 }
                 break;
             }
