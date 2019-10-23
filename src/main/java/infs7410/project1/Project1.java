@@ -516,7 +516,7 @@ public class Project1 {
 
                                 Topic topic = topicsWithQrel.get(i);
                                 List<TrecResult> baseline = resultsBM25.getTrecResults(topic.getTopicId());
-                                TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 5, index.getCollectionStatistics().getAverageDocumentLength());
+                                TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, lex, invertedIndex, meta, 20, index.getCollectionStatistics().getAverageDocumentLength());
                                 finalResults.getTrecResults().addAll(results.getTrecResults());
                             }
                             finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");
