@@ -2,47 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5fe124c4-2a13-40cf-9910-71748a6bfda2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/RerankerPRF.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/core/OutputFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/core/Qrel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/part3/BM25_RSJ.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/tar/2017/testing/qrels/2017-qrel_abs_test.qrels.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/tar/2017/training/qrels/2017-training.qrels" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/Analysing.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/output/Analysing.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/Diagram.vsdx" beforeDir="false" afterPath="$PROJECT_DIR$/output/Diagram.vsdx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/evals/evaluate-all.sh" beforeDir="false" afterPath="$PROJECT_DIR$/output/evals/evaluate-all.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-Borda.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-Borda.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-CombMNZ.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-CombMNZ.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-CombSUM.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-CombSUM.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-TF_IDF.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-boolean-BM25-vs-TF_IDF.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-Borda-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-Borda-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-Borda.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-Borda.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombMNZ-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombMNZ-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombMNZ.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombMNZ.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombSUM-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombSUM-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombSUM.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-CombSUM.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-TF_IDF-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-TF_IDF-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-TF_IDF.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2017-title-BM25-vs-TF_IDF.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-Borda.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-Borda.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-CombMNZ.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-CombMNZ.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-CombSUM.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-CombSUM.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-TF_IDF.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-boolean-BM25-vs-TF_IDF.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-Borda-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-Borda-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-Borda.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-Borda.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombMNZ-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombMNZ-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombMNZ.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombMNZ.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombSUM-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombSUM-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombSUM.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-CombSUM.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-TF_IDF-rprec.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-TF_IDF-rprec.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-TF_IDF.png" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/2018-title-BM25-vs-TF_IDF.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/plots/gain-loss.sh" beforeDir="false" afterPath="$PROJECT_DIR$/output/plots/gain-loss.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/gainloss_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/gainloss_plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/Project1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/Project1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/TrecResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/TrecResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/core/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/core/Topic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/core/TopicParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/core/TopicParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/infs7410/project1/part3/BM25_RSJ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/infs7410/project1/part3/BM25_RSJ.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
