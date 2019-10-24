@@ -500,7 +500,7 @@ public class Project1 {
                     // ################################# Read ranked file ################################
                     String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
                     TrecResults resultsBM25 = new TrecResults(pathBM25);
-                    BM25_RSJ bm = new BM25_RSJ(0.75, 0.2, 0.75);
+                    BM25_RSJ bm = new BM25_RSJ(0.75, 0.1, 5);
                     // --------------------------------------------------------------------------------------------
 
                     TrecResults finalResults = new TrecResults();
