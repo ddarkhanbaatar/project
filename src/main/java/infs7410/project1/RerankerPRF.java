@@ -90,7 +90,7 @@ public class RerankerPRF {
         // 1. Calculation of Term Frequency in the query
         {
             startTime();
-            System.out.println("________________ 1. Calculation of Term Frequency in the query");
+            System.out.println("------------------------------------------------------------");
             for (String term : topic.getQueries()) {
                 if (termsQueryFreq.containsKey(term)) continue;
                 int tf = 0;
@@ -99,7 +99,6 @@ public class RerankerPRF {
                         tf++;
                 termsQueryFreq.put(term, tf);
             }
-            System.out.println("________________ Finished (" + getDuration() + ")");
         }
 
 
@@ -117,9 +116,10 @@ public class RerankerPRF {
             R++;
 
         baseline.remove(0); // Remove first item
+
         // Until all items are ranked
         do {
-            RerankerPRF.isLog = true;// (i < 20);
+            RerankerPRF.isLog = (topic.getTopicId().equals("CD007394")) && (i < 5);
             // Calculate small r and n for all terms in order to reduce iteration cost
             HashMap<String, RelevanceValue> termRelevance = new HashMap<>();
             for (String queryTerm : topic.getQueries()) {
@@ -145,16 +145,17 @@ public class RerankerPRF {
 
             // Iterate until f to use RF
             TrecResults rfDocs = new TrecResults();
-//            if (RerankerPRF.isLog)
-//                System.out.println("________________ 4." + i + " BM 25 + RF (N=" + N + ",R=" + R + ")");
+            if (RerankerPRF.isLog)
+                System.out.println("________" + topic.getTopicId() + "________ 4." + (i + 1) + "(N=" + N + ",R=" + R + ")");
+
             for (int a = 0; a < f && a < baseline.size(); a++) {
                 TrecResult doc = baseline.get(a);
                 // Calculate total scores
                 double score = wm.totalScore(doc.getDocID(), topic.getQueries(), termsQueryFreq, termsDocFreq, docLen, termRelevance, avgDocLen, N, R, f);
 
                 rfDocs.getTrecResults().add(new TrecResult(doc.getTopic(), doc.getDocID(), score, a));
-                //if (RerankerPRF.isLog)
-                //    System.out.println("              [" + (a + 1) + "] DocId:" + doc.getDocID() + ", Score:" + score);
+                if (RerankerPRF.isLog)
+                    System.out.println("              [" + (a + 1) + "] DocId:" + doc.getDocID() + ", Score:" + score + ", Relevant:" + (topic.getQrels().relevant.containsKey(doc.getDocID())));
             }
 
             double max = rfDocs.getTrecResults().get(0).getScore();
@@ -167,8 +168,8 @@ public class RerankerPRF {
                     high = k;
                 }
             }
-//            if (RerankerPRF.isLog)
-//                System.out.println("Choose:" + rfDocs.get(high).getDocID() + " | " + rfDocs.get(high).getScore() + " | " + (rfDocs.get(high).getOriginalIndex() + 1) + "->" + (i + 1));
+            if (RerankerPRF.isLog)
+                System.out.println("Choose:" + rfDocs.get(high).getDocID() + " | " + rfDocs.get(high).getScore() + " | " + (rfDocs.get(high).getOriginalIndex() + 1) + "->" + (i + 1));
             // Highest value is selected as next ranking element
             TrecResult selectedDoc = rfDocs.get(high);
             results.getTrecResults().add(new TrecResult(

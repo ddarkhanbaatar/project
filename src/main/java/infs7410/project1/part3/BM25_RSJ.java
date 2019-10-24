@@ -1,12 +1,11 @@
 package infs7410.project1.part3;
 
 import infs7410.project1.RerankerPRF;
-import org.terrier.matching.models.WeightingModel;
+import org.terrier.matching.models.WeightingModelLibrary;
 
 import java.util.HashMap;
 
 public class BM25_RSJ {
-    private static final long serialVersionUID = 1L;
     private double k1 = 1.2D;
     private double b = 0.00D;
     private double k2 = 8.0D;
@@ -23,18 +22,21 @@ public class BM25_RSJ {
         return "BM25-k1_" + this.k1 + "-k2_" + this.k2 + "-b_" + this.b + "-f" + f;
     }
 
-    public double score(double queryFeq, int docFeq, int docLen, double avgDocLen, double N, double n, double R, double r) {
+    public double score(String queryTerm, double queryFeq, int docFeq, int docLen, double avgDocLen, double N, double n, double R, double r) {
         double B = (1.0D - this.b) + this.b * docLen / avgDocLen;
 
         double weight1 = (r + 0.5D) / (R - r + 0.5D);
-        double weight2 = (n - r + 0.5D) / (N - n - R + r + 0.05D);
-        double RJS_weight = Math.log(weight1 / weight2);
+        double weight2 = (n - r + 0.5D) / (N - n - R + r + 0.5D);
+        double RJS_weight = WeightingModelLibrary.log(weight1 / weight2);
         double saturation = ((this.k1 + 1.0D) * docFeq / (k1 * B + docFeq));
         double within_query = ((this.k2 + 1.0D) * queryFeq / (this.k2 + queryFeq));
 
-//        if(RerankerPRF.isLog)
-//            System.out.println(String.format("weight:%f, sat:%f, query_within:%f", RJS_weight, weight2, saturation, within_query));
-
+        if (RerankerPRF.isLog) {
+            // System.out.println(String.format("(%f - %f + 0.5D) / (%f - %f - %f + %f + 0.05D) = %f / %f =%f", n, r, N, n, R, r, (n - r + 0.5D), (N - n - R + r + 0.05D), weight2));
+            // System.out.printf("log(%.0f/%.0f)=%f    ", weight1, weight2, WeightingModelLibrary.log(weight1/weight2));
+            System.out.println(String.format("[%s] N:%.0f,R:%.0f,n:%.0f,r:%.0f,w1:%f,w2:%f,w:%f,sat:%f, docFreq: %d,querFreq:%.0f,score:%f",
+                    queryTerm, N, R, n, r, weight1, weight2, RJS_weight, saturation, docFeq, queryFeq, RJS_weight * saturation * within_query));
+        }
         return RJS_weight * saturation * within_query;
     }
 
@@ -53,9 +55,7 @@ public class BM25_RSJ {
             int queryFeq = termsQueryFreq.get(queryTerm);
             int feq = termsDocFreq.get(queryTerm).get(docId);
             int len = docLen.get(docId);
-            double score = score(queryFeq, feq, len, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
-//            if(RerankerPRF.isLog)
-//                System.out.println("Term:" + queryTerm + ", Score:" + score +  ", queryReq:" + queryFeq + ", docFeq:" + docFeq + ", docLen:" + docLen);
+            double score = score(queryTerm, queryFeq, feq, len, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
             totalScore += score;
         }
 
