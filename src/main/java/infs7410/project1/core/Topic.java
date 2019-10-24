@@ -1,13 +1,12 @@
 package infs7410.project1.core;
 
-import org.apache.commons.lang.ArrayUtils;
+import infs7410.project1.TrecResult;
+import infs7410.project1.TrecResults;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,6 +20,8 @@ public class Topic {
     private String[] docs;
     private String fileName;
     private Qrel qrels;
+    private List<TrecResult> trecResults;
+    private HashSet<String> docIdSet = new HashSet<>();
 
     public Topic() {
 
@@ -46,10 +47,9 @@ public class Topic {
                         // Convert to query list
                         String[] words = this.title.split(" ");
                         this.queries = TextProcessor.doStemAndStopwords(words);
-                        List<String> temp=new ArrayList<>();
-                        for(String term : this.queries)
-                        {
-                            if(!term.toLowerCase().equals("patient"))
+                        List<String> temp = new ArrayList<>();
+                        for (String term : this.queries) {
+                            if (!term.toLowerCase().equals("patient"))
                                 temp.add(term);
                         }
                         this.queries = temp.stream().toArray(String[]::new);
@@ -156,5 +156,17 @@ public class Topic {
 
     public void setQrels(Qrel qrels) {
         this.qrels = qrels;
+    }
+
+    public List<TrecResult> getBaseline() {
+        return trecResults;
+    }
+
+    public void setBaseline(List<TrecResult> trecResults) {
+        this.trecResults = trecResults;
+        for (TrecResult trecResult : trecResults) {
+            if (docIdSet.contains(trecResult.getDocID()))
+                docIdSet.add(trecResult.getDocID());
+        }
     }
 }

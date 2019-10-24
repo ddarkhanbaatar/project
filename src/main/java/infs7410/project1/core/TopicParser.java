@@ -1,11 +1,15 @@
 package infs7410.project1.core;
 
+import infs7410.project1.TrecResult;
+import infs7410.project1.TrecResults;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class TopicParser {
@@ -37,14 +41,17 @@ public class TopicParser {
             result.add(topic);
         }
         long second = (System.currentTimeMillis() - start) / 1000;
-        System.out.printf("Topics No:%d,  Total Queries: %d, Total Pids: %d, Time %d:%d\n", result.size(), q, d, second / 60, second % 60);
+//        System.out.printf("Topics No:%d,  Total Queries: %d, Total Pids: %d, Time %d:%d\n", result.size(), q, d, second / 60, second % 60);
 
         return result;
     }
 
-    public static ArrayList<Topic> parseQrel(String qrelPath, ArrayList<Topic> topics) {
+    public static List<Topic> parseQrel(String qrelPath, TrecResults baseline, List<Topic> topics) {
 
-        HashMap<String, Qrel> result = new HashMap<>();
+        HashMap<String, Qrel> qrelsSet = new HashMap<>();
+        HashMap<String, List<TrecResult>> topicSet = new HashMap<>();
+
+        ArrayList<Topic> topicResult=new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(qrelPath));) {
             scanner.useDelimiter("\n");
             while (scanner.hasNext()) {
@@ -54,19 +61,27 @@ public class TopicParser {
                 String docid = values[2];
                 Boolean relevant = Integer.parseInt(values[3]) == 1;
 
-                if (!result.containsKey(topic)) {
-                    result.put(topic, new Qrel());
+                if (!qrelsSet.containsKey(topic)) {
+                    qrelsSet.put(topic, new Qrel());
                 }
 
                 if (relevant)
-                    result.get(topic).relevant.put(docid, true);
+                    qrelsSet.get(topic).relevant.add(docid);
                 else
-                    result.get(topic).nonRelevant.put(docid, false);
+                    qrelsSet.get(topic).nonRelevant.add(docid);
             }
-            System.out.println("Qrels file has been read:"+result.size());
+//            System.out.println("Qrels file has been read:"+qrelsSet.size());
+
+            // Convert treclist into topic based hashmap
+            for(TrecResult trecResult:baseline.getTrecResults()){
+                if(!topicSet.containsKey(trecResult.getTopic()))
+                    topicSet.put(trecResult.getTopic(), new ArrayList<>());
+                topicSet.get(trecResult.getTopic()).add(trecResult);
+            }
             // Assign values
-            for(int i=0;i<topics.size();i++){
-                topics.get(i).setQrels(result.get(topics.get(i).getTopicId()));
+            for(Topic topic:topics){
+                topic.setQrels(qrelsSet.get(topic.getTopicId()));
+                topic.setBaseline(topicSet.get(topic.getTopicId()));
             }
 
         } catch (FileNotFoundException e) {

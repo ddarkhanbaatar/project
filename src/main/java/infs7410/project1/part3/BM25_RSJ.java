@@ -22,7 +22,7 @@ public class BM25_RSJ {
         return "BM25-k1_" + this.k1 + "-k2_" + this.k2 + "-b_" + this.b + "-f" + f;
     }
 
-    public double score(String queryTerm, double queryFeq, int docFeq, int docLen, double avgDocLen, double N, double n, double R, double r) {
+    public double score(String queryTerm, double queryFeq, double docFeq, double docLen, double avgDocLen, double N, double n, double R, double r) {
         double B = (1.0D - this.b) + this.b * docLen / avgDocLen;
 
         double weight1 = (r + 0.5D) / (R - r + 0.5D);
@@ -34,7 +34,7 @@ public class BM25_RSJ {
         if (RerankerPRF.isLog) {
             // System.out.println(String.format("(%f - %f + 0.5D) / (%f - %f - %f + %f + 0.05D) = %f / %f =%f", n, r, N, n, R, r, (n - r + 0.5D), (N - n - R + r + 0.05D), weight2));
             // System.out.printf("log(%.0f/%.0f)=%f    ", weight1, weight2, WeightingModelLibrary.log(weight1/weight2));
-            System.out.println(String.format("[%s] N:%.0f,R:%.0f,n:%.0f,r:%.0f,w1:%f,w2:%f,w:%f,sat:%f, docFreq: %d,querFreq:%.0f,score:%f",
+            System.out.println(String.format("[%s] N:%.0f,R:%.0f,n:%.0f,r:%.0f,w1:%f,w2:%f,w:%f,sat:%f, docFreq: %.0f,querFreq:%.0f,score:%f",
                     queryTerm, N, R, n, r, weight1, weight2, RJS_weight, saturation, docFeq, queryFeq, RJS_weight * saturation * within_query));
         }
         return RJS_weight * saturation * within_query;
@@ -43,19 +43,24 @@ public class BM25_RSJ {
     public double totalScore(String docId, String[] query,
                              HashMap<String, Integer> termsQueryFreq,
                              HashMap<String, HashMap<String, Integer>> termsDocFreq,
-                             HashMap<String, Integer> docLen,
+                             HashMap<String, Integer> docLenSet,
                              HashMap<String, RerankerPRF.RelevanceValue> termRelevance,
                              double avgDocLen, double N, double R, int f) {
         double totalScore = 0.0D;
         this.f = f;
         for (String queryTerm : query) {
             if (!termsDocFreq.containsKey(queryTerm)) continue;
-            if (!termsDocFreq.get(queryTerm).containsKey(docId)) continue;
+            double docFeq, docLen;
+            if (!termsDocFreq.get(queryTerm).containsKey(docId)) {
+                docFeq = -0.00000000000001;//Double.NEGATIVE_INFINITY;
+                docLen=avgDocLen;
+            } else {
+                docFeq = termsDocFreq.get(queryTerm).get(docId);
+                docLen = docLenSet.get(docId);
+            }
 
             int queryFeq = termsQueryFreq.get(queryTerm);
-            int feq = termsDocFreq.get(queryTerm).get(docId);
-            int len = docLen.get(docId);
-            double score = score(queryTerm, queryFeq, feq, len, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
+            double score = score(queryTerm, queryFeq, docFeq, docLen, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
             totalScore += score;
         }
 

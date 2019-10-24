@@ -72,7 +72,7 @@ public class RerankerPRF {
 
 
     public TrecResults rerank(
-            String header, Topic topic, List<TrecResult> baseline, BM25_RSJ wm,
+            String header, Topic topic, BM25_RSJ wm,
             HashMap<String, HashMap<String, Integer>> termsDocFreq,
             HashMap<String, Integer> docLen,
             int f, double avgDocLen) throws IOException {
@@ -81,6 +81,8 @@ public class RerankerPRF {
         HashMap<String, Integer> termsQueryFreq = new HashMap<>();
         long start = System.currentTimeMillis();
         TrecResults results = new TrecResults(); // Create a results list from the scored documents.
+        List<TrecResult> baseline=new ArrayList<>(topic.getBaseline());
+
         System.out.println("baseline N:" + baseline.size());
 
         // Set document set
@@ -112,7 +114,7 @@ public class RerankerPRF {
 
         results.getTrecResults().add(first); // First is first
 
-        if (topic.getQrels().relevant.containsKey(first.getDocID()))
+        if (topic.getQrels().relevant.contains(first.getDocID()))
             R++;
 
         baseline.remove(0); // Remove first item
@@ -132,7 +134,7 @@ public class RerankerPRF {
                 for (TrecResult doc : results.getTrecResults()) {
                     if (docFreq.containsKey(doc.getDocID())) {
                         termValue.increaseN();
-                        if (topic.getQrels().relevant.containsKey(doc.getDocID())) {
+                        if (topic.getQrels().relevant.contains(doc.getDocID())) {
                             termValue.increaseR();
                         }
                     }
@@ -155,7 +157,7 @@ public class RerankerPRF {
 
                 rfDocs.getTrecResults().add(new TrecResult(doc.getTopic(), doc.getDocID(), score, a));
                 if (RerankerPRF.isLog)
-                    System.out.println("              [" + (a + 1) + "] DocId:" + doc.getDocID() + ", Score:" + score + ", Relevant:" + (topic.getQrels().relevant.containsKey(doc.getDocID())));
+                    System.out.println("              [" + (a + 1) + "] DocId:" + doc.getDocID() + ", Score:" + score + ", Relevant:" + (topic.getQrels().relevant.contains(doc.getDocID())));
             }
 
             double max = rfDocs.getTrecResults().get(0).getScore();
@@ -180,7 +182,7 @@ public class RerankerPRF {
                     wm.getInfo()
             ));
             N++;
-            if (topic.getQrels().relevant.containsKey(selectedDoc.getDocID()))
+            if (topic.getQrels().relevant.contains(selectedDoc.getDocID()))
                 R++;
 
             baseline.remove(selectedDoc.getOriginalIndex());

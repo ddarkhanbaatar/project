@@ -1,14 +1,14 @@
 package infs7410.project1.core;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
 public class Qrel {
-    public HashMap<String, Boolean> relevant;
-    public HashMap<String, Boolean> nonRelevant;
+    public HashSet<String> relevant;
+    public HashSet<String> nonRelevant;
 
     public Qrel() {
-        relevant=new HashMap<>();
-        nonRelevant=new HashMap<>();
+        relevant=new HashSet<>();
+        nonRelevant=new HashSet<>();
     }
 
 

@@ -12,7 +12,6 @@ import org.apache.commons.math3.stat.inference.TTest;
 import org.terrier.matching.models.BM25;
 import org.terrier.matching.models.TF_IDF;
 import org.terrier.matching.models.WeightingModel;
-import org.terrier.querying.*;
 import org.terrier.structures.*;
 import org.terrier.structures.postings.IterablePosting;
 
@@ -454,39 +453,56 @@ public class Project1 {
                     System.out.println("------------------------------------------------------------------------");
                     System.out.println("Start ranking by using [" + text + "] ");
 
+                    // ################################# Read files ################################
+                    String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
+                    TrecResults resultsBM25 = new TrecResults(pathBM25);
+
                     // Build path and read topics (only for testing data)
                     topicPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("topics");
                     String qrelPath = path.get("tar") + path.get(dataYear) + path.get(dataType) + path.get("qrels");
 
                     // Topic files read in order to prepare query
-                    topics = TopicParser.parse(topicPath, queryType, queryPath);
+                    List<Topic> topicsWithQuery = TopicParser.parse(topicPath, queryType, queryPath);
                     // Qrel judgement read
-                    ArrayList<Topic> topicsWithQrel = TopicParser.parseQrel(qrelPath, topics);
+                    List<Topic> topicList = TopicParser.parseQrel(qrelPath, resultsBM25, topicsWithQuery);
+                    int total = 0, totalTopic = 0;
+
+                    for (Topic topic : topicList) {
+                        total += topic.getBaseline().size();
+                        totalTopic++;
+                    }
+
+                    System.out.println("Topic:" + totalTopic + ", Total:" + total+", Baseline:"+resultsBM25.getTrecResults().size());
                     // -----------------------------------------------------------------------------
                     long start = System.currentTimeMillis();
-                    double avgDocLen=index.getCollectionStatistics().getAverageDocumentLength();
+                    double avgDocLen = index.getCollectionStatistics().getAverageDocumentLength();
                     HashMap<String, HashMap<String, Integer>> termsDocFreqSet = new HashMap<>();
                     HashMap<String, Integer> docLenSet = new HashMap<>();
-                    HashSet<String> docIdSet=new HashSet<>();
-                    for (Topic topicInfo : topicsWithQrel) {
-                        for (String term : topicInfo.getQueries()) {
-                            if (!termsDocFreqSet.containsKey(term))
-                                termsDocFreqSet.put(term, new HashMap<>());
+                    HashSet<String> docIdSet = new HashSet<>();
+                    List<String> termSet=new ArrayList<>();
 
-                            for (String docId : topicInfo.getDocs()) {
-                                if (!termsDocFreqSet.get(term).containsKey(docId)) {
-                                    docIdSet.add(docId);
-                                }
+                    for (Topic topicInfo : topicList) {
+                        for (String term : topicInfo.getQueries()) {
+                            if (!termsDocFreqSet.containsKey(term)) {
+                                termsDocFreqSet.put(term, new HashMap<>());
+                                termSet.add(term);
+                            }
+
+                            // Store all docs
+                            for(TrecResult doc:topicInfo.getBaseline()){
+                                if (!docIdSet.contains(doc.getDocID()))
+                                    docIdSet.add(doc.getDocID());
                             }
                         }
                     }
-                    for (String term : termsDocFreqSet.keySet()) {
+                    for (String term : termSet) {
                         LexiconEntry entry = lex.getLexiconEntry(term);
                         if (entry == null) continue;
 
                         IterablePosting ip = invertedIndex.getPostings(entry);
                         while (ip.next() != IterablePosting.EOL) {
                             String docId = meta.getItem("docno", ip.getId());
+
                             // Topic contains this docId
                             if (docIdSet.contains(docId)) {
                                 termsDocFreqSet.get(term).put(docId, ip.getFrequency());
@@ -494,25 +510,21 @@ public class Project1 {
                             }
                         }
                     }
+
+
                     long second = (System.currentTimeMillis() - start) / 1000;
                     System.out.printf("Finished to build metadata (%02d:%02d)\n", second / 60, second % 60);
 
-                    // ################################# Read ranked file ################################
-                    String pathBM25 = path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-BM25b0.0.res";
-                    TrecResults resultsBM25 = new TrecResults(pathBM25);
-                    BM25_RSJ bm = new BM25_RSJ(0.75, 0.1, 5);
-                    // --------------------------------------------------------------------------------------------
 
+                    BM25_RSJ bm = new BM25_RSJ(0.75, 1.2, 1);
+                    // --------------------------------------------------------------------------------------------
                     TrecResults finalResults = new TrecResults();
                     finalResults.setRunName(text);
 
-
-                    for (int i = 0; i < topicsWithQrel.size(); i++) {
-
-                        Topic topic = topicsWithQrel.get(i);
+                    for (int i = 0; i < topicList.size(); i++) {
+                        Topic topic = topicList.get(i);
                         System.out.println("NonRelevant:" + topic.getQrels().nonRelevant.size() + ", Relevant:" + topic.getQrels().relevant.size());
-                        List<TrecResult> baseline = resultsBM25.getTrecResults(topic.getTopicId());
-                        TrecResults results = prf.rerank((i + 1) + "/" + topics.size(), topic, baseline, bm, termsDocFreqSet, docLenSet, 5, avgDocLen);
+                        TrecResults results = prf.rerank((i + 1) + "/" + topicList.size(), topic, bm, termsDocFreqSet, docLenSet, 5, avgDocLen);
                         finalResults.getTrecResults().addAll(results.getTrecResults());
                     }
                     finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");
