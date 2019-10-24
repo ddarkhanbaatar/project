@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Topic {
@@ -45,7 +46,13 @@ public class Topic {
                         // Convert to query list
                         String[] words = this.title.split(" ");
                         this.queries = TextProcessor.doStemAndStopwords(words);
-
+                        List<String> temp=new ArrayList<>();
+                        for(String term : this.queries)
+                        {
+                            if(!term.toLowerCase().equals("patient"))
+                                temp.add(term);
+                        }
+                        this.queries = temp.stream().toArray(String[]::new);
                         break;
                     case 3: // Boolean Queries
                         this.booleanQueries = line;
