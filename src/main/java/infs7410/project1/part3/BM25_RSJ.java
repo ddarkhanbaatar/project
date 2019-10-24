@@ -48,14 +48,12 @@ public class BM25_RSJ {
                              double avgDocLen, double N, double R, int f) {
         double totalScore = 0.0D;
         this.f = f;
-        int num = 0;
         for (String queryTerm : query) {
             if (!termsDocFreq.containsKey(queryTerm)) continue;
             double docFeq, docLen;
             if (!termsDocFreq.get(queryTerm).containsKey(docId)) {
-                continue;
-//                docFeq = -0.000001;
-//                docLen = avgDocLen;
+                docFeq = -0.000001;
+                docLen = avgDocLen;
             } else {
                 docFeq = termsDocFreq.get(queryTerm).get(docId);
                 docLen = docLenSet.get(docId);
@@ -64,10 +62,10 @@ public class BM25_RSJ {
             int queryFeq = termsQueryFreq.get(queryTerm);
             double score = score(queryTerm, queryFeq, docFeq, docLen, avgDocLen, N, termRelevance.get(queryTerm).getNi(), R, termRelevance.get(queryTerm).getRi());
             totalScore += score;
-            num++;
+
         }
 
-        return totalScore / num;
+        return totalScore;
     }
 
 }

@@ -524,7 +524,7 @@ public class Project1 {
                     for (int i = 0; i < topicList.size(); i++) {
                         Topic topic = topicList.get(i);
                         System.out.println("NonRelevant:" + topic.getQrels().nonRelevant.size() + ", Relevant:" + topic.getQrels().relevant.size());
-                        TrecResults results = prf.rerank((i + 1) + "/" + topicList.size(), topic, bm, termsDocFreqSet, docLenSet, 5, avgDocLen);
+                        TrecResults results = prf.rerank((i + 1) + "/" + topicList.size(), topic, bm, termsDocFreqSet, docLenSet, 20, avgDocLen);
                         finalResults.getTrecResults().addAll(results.getTrecResults());
                     }
                     finalResults.write(path.get("output") + path.get(dataYear) + path.get(queryType) + path.get(dataType) + "run-" + bm.getInfo() + ".res");
